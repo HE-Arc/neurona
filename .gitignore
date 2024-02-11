@@ -2,3 +2,5 @@
 .DS_Store
 
 api/db.sqlite3
+
+frontend/.vscode/
