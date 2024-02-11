@@ -9,3 +9,13 @@ services:
 
     volumes: 
       - ./api/:/data 
+
+  vuejs:
+    build: ./docker-images/vuejs
+    container_name: neurona-vuejs
+    ports:
+      - 5173:5173
+
+    volumes:
+      - ./frontend:/data
+
