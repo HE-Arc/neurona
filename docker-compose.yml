@@ -1,0 +1,11 @@
+version: '3.0'
+
+services:
+  api:
+    build: ./docker-images/django
+    container_name: neurona-django
+    ports:
+      - 8000:8000
+
+    volumes: 
+      - ./api/:/data 
