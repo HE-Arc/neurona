@@ -9,12 +9,6 @@ const items = [
   {title: 'Saved', icon: 'mdi-bookmark', to: '/saved'},
 ];
 
-const profile = [
-  {title: 'Settings', icon: 'mdi-cog', to: '/settings'},
-  {title: 'About us', icon: 'mdi-information', to: '/about'},
-  {title: 'Logout', icon: 'mdi-logout', to: '/logout'},
-];
-
 const bottom_items = [
   {title: 'Settings', icon: 'mdi-cog', to: '/settings'},
   {title: 'About us', icon: 'mdi-information', to: '/about'},
@@ -49,6 +43,13 @@ drawer.value = !is_mobile.value;
     <v-spacer></v-spacer>
 
     <v-btn variant="text" icon="mdi-magnify"></v-btn>
+
+    <v-tooltip text="Create a new post" location="bottom">
+      <template v-slot:activator="{ props }">
+        <v-btn v-bind="props" icon="mdi-pencil" :to="{name: 'posts.create'}"/>
+      </template>
+    </v-tooltip>
+
   </v-app-bar>
 
   <v-navigation-drawer
@@ -63,6 +64,7 @@ drawer.value = !is_mobile.value;
           <v-avatar image="https://nzbirdsonline.org.nz/sites/all/files/2X2A1697%20King%20Penguin%20bol.jpg"></v-avatar>
         </template>
         <v-list-item-title>John Doe</v-list-item-title>
+        <v-list-item-subtitle>kingpenguin</v-list-item-subtitle>
       </v-list-item>
 
       <v-divider/>
