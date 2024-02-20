@@ -31,6 +31,7 @@ onMounted(async () => {
       id: 1,
       username: "kingpenguin",
       avatar: "https://nzbirdsonline.org.nz/sites/all/files/2X2A1697%20King%20Penguin%20bol.jpg",
+      name: "John Doe",
     },
     space: {
       id: 1,
@@ -72,12 +73,12 @@ function open_post(){
 
   <v-card
       v-if="mounted"
-      :title="post.title"
+      :title="post.author.name"
       :subtitle="post.author.username + ' on ' + post.space.title"
       :text="post.content"
       :prepend-avatar="post.author.avatar"
       @click="open_post"
-      class="mx-4 my-4"
+      class="ma-4"
       :ripple="false"
   >
     <v-card-actions>
