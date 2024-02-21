@@ -46,6 +46,7 @@ const is_mobile = useDisplay().smAndDown;
         class="mx-6"
         color="primary"
         prepend-icon="mdi-logout"
+        :to="{name: 'logout'}"
     >
       Log out
     </v-btn>
