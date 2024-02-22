@@ -7,3 +7,5 @@ frontend/.vscode/
 
 api/logs.sqlite3
 __pycache__
+
+.idea
