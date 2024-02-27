@@ -1,17 +1,19 @@
 from django.db import models
 from enum import Enum
 
+
 class Privacy(Enum):
-    PUBLIC = 0
-    PROTECTED = 1
-    RESTRICTED = 2
-    PRIVATE = 3
+    PUBLIC = "public"
+    PROTECTED = "protected"
+    RESTRICTED = "restricted"
+    PRIVATE = "private"
+
 
 class Spaces(models.Model):
     name = models.CharField(max_length=100)
     about = models.TextField(max_length=2000, blank=True)
     image_url = models.URLField(max_length=200, null=True)
-    privacy = models.IntegerField(choices=[(tag, tag.value) for tag in Privacy])
+    privacy = models.CharField(choices=[(tag, tag.value) for tag in Privacy], max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
