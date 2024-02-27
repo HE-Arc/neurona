@@ -4,3 +4,5 @@
 api/db.sqlite3
 
 frontend/.vscode/
+
+api/logs.sqlite3
