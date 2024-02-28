@@ -39,3 +39,11 @@ class Votes(models.Model):
     is_upvote = models.BooleanField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class CommentsVotes(models.Model):
+    user = models.ForeignKey('User', related_name='comments_votes', on_delete=models.CASCADE)
+    comment = models.ForeignKey(Comments, related_name='votes', on_delete=models.CASCADE)
+    is_upvote = models.BooleanField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
