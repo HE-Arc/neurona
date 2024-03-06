@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "neuronaApp",
+    "neuronaLogs"
 ]
 
 MIDDLEWARE = [
@@ -83,7 +84,7 @@ DATABASES = {
     },
 }
 
-DATABASE_ROUTERS = ["neuronaApp.DatabaseRouter.DatabaseRouter"]
+DATABASE_ROUTERS = ["neurona.DatabaseRouter.DatabaseRouter"]
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

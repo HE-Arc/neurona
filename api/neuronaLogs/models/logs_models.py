@@ -20,7 +20,7 @@ class UserAction(Enum):
 
 
 class UserLogs(models.Model):
-    user_id = models.IntegerField()
+    user_id = models.IntegerField(null=True)
     email = models.EmailField(max_length=100)
     display_name = models.CharField(max_length=100)
     username = models.CharField(max_length=100)
@@ -40,9 +40,9 @@ class PostAction(Enum):
 
 
 class PostLogs(models.Model):
-    post_id = models.IntegerField()
+    post_id = models.IntegerField(null=True)
     user_id = models.IntegerField()
-    admin_id = models.IntegerField()
+    admin_id = models.IntegerField(null=True)
     content = models.TextField(max_length=1000)
     action = models.CharField(choices=[(tag, tag.value) for tag in PostAction], max_length=100)
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -83,7 +83,7 @@ class CommentAction(Enum):
 
 
 class CommentLogs(models.Model):
-    comment_id = models.IntegerField()
+    comment_id = models.IntegerField(null=True)
     user_id = models.IntegerField()
     post_id = models.IntegerField()
     content = models.TextField(max_length=1000)
@@ -123,7 +123,7 @@ class SpaceAction(Enum):
 
 
 class SpaceLogs(models.Model):
-    space_id = models.IntegerField()
+    space_id = models.IntegerField(null=True)
     name = models.CharField(max_length=100)
     about = models.TextField(max_length=2000, blank=True)
     image_url = models.URLField(max_length=200, null=True)
@@ -196,7 +196,7 @@ class TagAction(Enum):
 
 
 class TagLogs(models.Model):
-    tag_id = models.IntegerField()
+    tag_id = models.IntegerField(null=True)
     space_id = models.IntegerField()
     admin_id = models.IntegerField()
     name = models.CharField(max_length=100)
