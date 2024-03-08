@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Posts, Comments, PostsImages, CommentsImages, Votes, CommentsVotes
+from neuronaApp.models import Posts, Comments, PostsImages, CommentsImages, Votes, CommentsVotes
 
 class PostsSerializer(serializers.ModelSerializer):
     class Meta:
