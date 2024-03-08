@@ -1,15 +1,23 @@
-<script setup>
-
-import Post from "@/components/Post.vue";
-</script>
-
 <template>
-  <Post :id="1" />
-  <Post :id="1" />
-  <Post :id="1" />
-  <Post :id="1" />
+  <!-- Your template for listing posts -->
 </template>
 
-<style scoped>
+<script>
+import ApiService from '@/services/api';
 
-</style>
+export default {
+  data() {
+    return {
+      posts: [],
+    };
+  },
+  async created() {
+    try {
+      const response = await ApiService.getPosts();
+      this.posts = response.data;
+    } catch (error) {
+      console.error("There was an error fetching the posts:", error);
+    }
+  },
+};
+</script>
