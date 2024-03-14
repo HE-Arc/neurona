@@ -26,7 +26,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-# Application definition
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
+    # Application definition
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -36,11 +41,13 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "corsheaders",
     "neuronaApp",
     "neuronaLogs"
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -124,3 +131,12 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Environment variables
+# source : https://alicecampkin.medium.com/how-to-set-up-environment-variables-in-django-f3c4db78c55f
+import environ
+env = environ.Env()
+environ.Env.read_env()
+
+PASSKEY_RP_ID = env("PASSKEY_RP_ID")
+PASSKEY_ORIGIN = env("PASSKEY_ORIGIN")

@@ -1,9 +1,10 @@
-FROM alpine
+FROM --platform=linux/amd64 alpine
 
 ENV PIPENV_VENV_IN_PROJECT=1
 
 RUN apk update
 RUN apk add python3
+RUN apk add gcc libc-dev linux-headers libffi-dev
 RUN apk add py3-pip
 RUN pip3 install pipenv --break-system-packages
 WORKDIR /data
