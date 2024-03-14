@@ -1,37 +1,34 @@
 <script setup>
 
 import {ref} from "vue";
-import {createPublicKeyCredential, getCredentials} from "@/Authentication/Passkey";
-import router from "@/router";
-import {set_current_auth_state, state} from "@/Authentication/store";
+import {login as passkeyLogin} from "@/Authentication/Passkey";
 import AlertBanner from "@/components/AlertBanner.vue";
 
 const username = ref('');
 const messages = ref([]);
 
-function login() {
-  // const credentials = createPublicKeyCredential('test', username.value)
-  //   .then((response) => {
-  //     state.authenticated = true;
-  //     set_current_auth_state('true');
-  //     router.push({name: 'home'});
-  //   })
-  //   .catch((e) => {
-  //     alert(e);
-  //   });
+function add_message(severity, message) {
+  messages.value.push({
+    type: severity,
+    message: [message]
+  });
+}
 
-  const assertion = getCredentials(username.value)
-    .then((response) => {
-      state.authenticated = true;
-      set_current_auth_state('true');
-      router.push({name: 'home'});
-    })
-    .catch((e) => {
-        messages.value = [{
-          type: 'error',
-          message: [e.message]
-        }];
-    });
+async function login(){
+  messages.value = [];
+  passkeyLogin(username.value).then(()=>{
+    add_message('success', 'Logged in successfully');
+  }).catch((e)=>{
+    if (e.isAxiosError){
+      if(e.response.status >= 400 && e.response.status < 500){
+        add_message('warning', e.response.data.message);
+      } else {
+        add_message('error', 'An unexpected error occurred while trying to log in');
+      }
+    } else {
+      add_message('warning', e.message);
+    }
+  });
 }
 
 </script>
