@@ -131,3 +131,12 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Environment variables
+# source : https://alicecampkin.medium.com/how-to-set-up-environment-variables-in-django-f3c4db78c55f
+import environ
+env = environ.Env()
+environ.Env.read_env()
+
+PASSKEY_RP_ID = env("PASSKEY_RP_ID")
+PASSKEY_ORIGIN = env("PASSKEY_ORIGIN")
