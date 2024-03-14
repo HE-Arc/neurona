@@ -1,77 +1,144 @@
-//TODO add env file for the host
-const HOST = process.env.PASSKEY_HOST;
+import axios from "axios";
+import routes from "@/api/routes";
 
-//TODO : get the challenge from the server
-function randomStringFromServer() {
-  const length = 32;
-  let result = '';
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  const charactersLength = characters.length;
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+async function fetchRegisterOptions(username, email) {
+  console.log("route", routes.authentication.register_options);
+  return axios.post(routes.authentication.register_options, {
+    "username": username,
+    "email": email,
+  });
+}
+
+async function fetchLoginOptions(username_or_email) {
+  return axios.post(routes.authentication.login_options, {
+    "username_or_email": username_or_email,
+  });
+}
+
+function strToBuf(str) {
+  str = str.replace(/-/g, '+').replace(/_/g, '/');
+  return Uint8Array.from(
+    atob(str), c => c.charCodeAt(0))
+}
+
+function BufToBase64url(buf) {
+  let str = '';
+  let bytes = new Uint8Array(buf);
+  for (let i = 0; i < bytes.byteLength; i++) {
+    str += String.fromCharCode(bytes[i]);
   }
-  return result;
+  let base64 = btoa(str);
+  return base64
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=/g, '');
 }
 
-function userIdFromEmail(email) {
-  const id = Uint8Array.from(
-    email, c => c.charCodeAt(0)
-  );
-  console.log("generated id", id);
-  return id;
-}
+async function getRegisterCredentialOptions(username, email) {
+  const options_str = await fetchRegisterOptions(username, email);
+  const options = JSON.parse(options_str.data.options);
+  const challenge_id = options_str.data.id;
 
-function getPublicKeyOptions(name, email) {
+  options.challenge = strToBuf(options.challenge);
+  options.user.id = strToBuf(options.user.id);
+
   return {
-    challenge: Uint8Array.from(
-      randomStringFromServer(), c => c.charCodeAt(0)),
-    rp: {
-      name: "NeuronaAuth",
-      id: HOST
-    },
-    user: {
-      id: userIdFromEmail(email),
-      name: email,
-      displayName: name,
-    },
-    pubKeyCredParams: [{alg: -7, type: "public-key"}],
-    authenticatorSelection: {
-      authenticatorAttachment: "cross-platform",
-    },
-    timeout: 60000,
-    attestation: "direct"
-  };
-}
-
-function getPublicKeyCredentialOptions(email) {
-  return {
-    challenge: Uint8Array.from(
-      randomStringFromServer(), c => c.charCodeAt(0)),
-    allowCredentials: [{
-      id: userIdFromEmail(email),
-      type: 'public-key',
-      transports:
-        [
-          "usb",
-          "nfc",
-          "smart-card",
-          "hybrid",
-          "ble",
-          "internal",
-        ],
-    }],
-    timeout: 60000,
+    options: options,
+    challenge_id: challenge_id,
   }
 }
 
-function createPublicKeyCredential(name, email) {
-  const publicKeyCredentialCreationOptions = getPublicKeyOptions(name, email);
-  return navigator.credentials.create({publicKey: publicKeyCredentialCreationOptions});
+async function getLoginCredentialOptions(username_or_email) {
+  const options_str = await fetchLoginOptions(username_or_email);
+  const options = JSON.parse(options_str.data.options);
+  const challenge_id = options_str.data.id;
+
+  options.challenge = strToBuf(options.challenge);
+
+  return {
+    options: options,
+    challenge_id: challenge_id,
+  }
 }
 
-function getCredentials(email) {
-  const publicKeyCredentialOptions = getPublicKeyCredentialOptions(email);
-  return navigator.credentials.get({publicKey: publicKeyCredentialOptions});
+async function createPublicKeyCredential(username, email) {
+  const credentialOptions = await getRegisterCredentialOptions(username, email);
+  const credentials_ = await navigator.credentials.create({publicKey: credentialOptions.options});
+
+  const credentials = {
+    id: credentials_.id,
+    rawId: credentials_.id,
+    response: {
+      attestationObject: BufToBase64url(credentials_.response.attestationObject),
+      clientDataJSON: BufToBase64url(credentials_.response.clientDataJSON),
+    },
+    type: credentials_.type,
+  }
+
+  const challenge_id = credentialOptions.challenge_id;
+
+  return {
+    credentials: credentials,
+    challenge_id: challenge_id,
+  }
 }
 
-export {createPublicKeyCredential, getCredentials};
+async function getPublicKeyCredential(username_or_email) {
+  const credentialOptions = await getLoginCredentialOptions(username_or_email);
+  const credentials_ = await navigator.credentials.get({publicKey: credentialOptions.options});
+
+  const credentials = {
+    id: credentials_.id,
+    rawId: credentials_.id,
+    response: {
+      authenticatorData: BufToBase64url(credentials_.response.authenticatorData),
+      clientDataJSON: BufToBase64url(credentials_.response.clientDataJSON),
+      signature: BufToBase64url(credentials_.response.signature),
+      userHandle: BufToBase64url(credentials_.response.userHandle),
+    },
+    type: credentials_.type,
+  }
+
+  return {
+    credentials: credentials,
+    challenge_id: credentialOptions.challenge_id,
+  }
+}
+
+async function requestLogin(username_or_email, credentials, challenge_id) {
+  const data = {
+    credentials: credentials,
+    data: {
+      challenge_id: challenge_id,
+      username_or_email: username_or_email,
+    }
+  }
+
+  await axios.post(routes.authentication.login, data);
+}
+
+async function requestRegister(username, email, credentials, challenge_id) {
+  const data = {
+    credentials: credentials,
+    data: {
+      username: username,
+      email: email,
+      challenge_id: challenge_id
+    }
+  }
+
+  await axios.post(routes.authentication.register, data);
+}
+
+async function login(username_or_email) {
+  const credentials = await getPublicKeyCredential(username_or_email);
+  await requestLogin(username_or_email, credentials.credentials, credentials.challenge_id);
+}
+
+async function register(username, email){
+  const credentials = await createPublicKeyCredential(username, email);
+  await requestRegister(username, email, credentials.credentials, credentials.challenge_id);
+}
+
+
+export {register, login};
