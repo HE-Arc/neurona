@@ -1,1 +1,1 @@
-from .passkey_serializer import *
+from .authentication_serializer import *
