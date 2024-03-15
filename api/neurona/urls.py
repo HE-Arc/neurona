@@ -16,15 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from neuronaApp.views import PostsViewSet, CommentsViewSet
-
-router = DefaultRouter()
-router.register(r'posts', PostsViewSet)
-router.register(r'comments', CommentsViewSet)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("neuronaApp.urls")),
-    path('', include(router.urls)),
 ]
