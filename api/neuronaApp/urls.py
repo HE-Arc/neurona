@@ -11,4 +11,6 @@ urlpatterns = [
     path("register/", views.RegisterView.as_view(), name="register"),
     path("login/", views.LoginView.as_view(), name="login"),
     path("", include(router.urls)),
+    path('spaces/', space_view.get_spaces, name='get_spaces'),
+    path('spaces/post', space_view.create_space, name='create_space'),
 ]
