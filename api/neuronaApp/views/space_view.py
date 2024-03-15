@@ -31,16 +31,13 @@ def get_space(request, pk):
 
 @api_view(['POST'])
 def create_space(request):
-    try:
-        serializer = SpaceSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    except Exception as e:
-        return Response({'error': 'Server error: ' + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+    serializer = SpaceSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
 # Update a space by id, either with put or patch method
 
 
@@ -63,8 +60,6 @@ def update_space(request, pk):
     except Spaces.DoesNotExist:
         return Response({'error': 'Space not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    except Exception as e:
-        return Response({'error': 'Server error: ' + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 # Delete a space by id
 
@@ -79,5 +74,3 @@ def delete_space(request, pk):
     except Spaces.DoesNotExist:
         return Response({'error': 'Space not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    except Exception as e:
-        return Response({'error': 'Server error: ' + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
