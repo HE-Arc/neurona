@@ -25,6 +25,6 @@ router.register(r'comments', CommentsViewSet)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/", include("neuronaApp.urls"))
+    path("api/", include("neuronaApp.urls")),
     path('', include(router.urls)),
 ]

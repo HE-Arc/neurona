@@ -11,3 +11,5 @@ __pycache__
 .idea
 
 api/.env
+
+api/neurona/.env

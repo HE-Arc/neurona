@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets
-from .models import Posts, Comments
-from .serializers import PostsSerializer, CommentsSerializer
+from neuronaApp.models import Posts, Comments
+from neuronaApp.serializers import PostsSerializer, CommentsSerializer
 
 class PostsViewSet(viewsets.ModelViewSet):
     queryset = Posts.objects.all()
