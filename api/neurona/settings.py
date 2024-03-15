@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 
+import environ
+env = environ.Env()
+environ.Env.read_env()
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -24,12 +29,9 @@ SECRET_KEY = "django-insecure-u2y&tl=67+qayf=6zphl*8$&sygjuik@-1wux%84xf2b*)dq$t
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-]
+CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS")
 
     # Application definition
 
@@ -135,9 +137,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Environment variables
 # source : https://alicecampkin.medium.com/how-to-set-up-environment-variables-in-django-f3c4db78c55f
-import environ
-env = environ.Env()
-environ.Env.read_env()
 
 PASSKEY_RP_ID = env("PASSKEY_RP_ID")
 PASSKEY_ORIGIN = env("PASSKEY_ORIGIN")
