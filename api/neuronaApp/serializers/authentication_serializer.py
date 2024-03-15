@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from neuronaApp.models import Challenges, User
+from neuronaApp.models import Challenges, User, ApiKeys
 import re
 
 USERNAME_MIN_LENGTH = 3
@@ -93,3 +93,11 @@ class ChallengeIdSerializer(serializers.Serializer):
     def get_error_message(self):
         return self.errors["challenge_id"][0]
 
+
+class ApiKeySerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ApiKeys
+        fields = [
+            "key",
+            "expires_at"
+            ]
