@@ -1,34 +1,15 @@
+<script setup>
+
+import Post from "@/components/Post.vue";
+</script>
+
 <template>
-  <div>
-    <!-- Iterate over posts and pass post data to the Post component -->
-    <Post 
-      v-for="post in posts" 
-      :key="post.id" 
-      :post="post" 
-    />
-  </div>
+  <Post :id="1" />
+  <Post :id="1" />
+  <Post :id="1" />
+  <Post :id="1" />
 </template>
 
-<script>
-import ApiService from '@/services/api';
-import Post from "@/components/Post.vue";
+<style scoped>
 
-export default {
-  components: {
-    Post,
-  },
-  data() {
-    return {
-      posts: [],
-    };
-  },
-  async created() {
-    try {
-      const response = await ApiService.getPosts();
-      this.posts = response.data;
-    } catch (error) {
-      console.error("There was an error fetching the posts:", error);
-    }
-  },
-};
-</script>
+</style>
