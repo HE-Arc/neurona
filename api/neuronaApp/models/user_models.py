@@ -1,4 +1,5 @@
 import random
+import secrets
 
 from django.db import models
 from django.utils import timezone
@@ -59,8 +60,26 @@ class PublicKeys(models.Model):
 
 
 class ApiKeys(models.Model):
+    KEY_VALIDITY_SECONDS = 7200 # 2 hours
+    KEY_SIZE = 64
+
     user = models.ForeignKey(User, related_name='api_keys', on_delete=models.CASCADE)
     key = models.CharField(max_length=256)
     expires_at = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def _get_random_key(self):
+        return secrets.token_urlsafe(self.KEY_SIZE)
+
+    def _get_expiration_time(self):
+        return timezone.now() + timezone.timedelta(seconds=self.KEY_VALIDITY_SECONDS)
+
+    def has_expired(self):
+        return self.expires_at < timezone.now()
+
+    def generate_and_get(self):
+        self.key = self._get_random_key()
+        self.expires_at = self._get_expiration_time()
+        self.save()
+        return self
