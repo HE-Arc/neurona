@@ -6,10 +6,10 @@ from rest_framework.views import APIView
 from webauthn import options_to_json
 from webauthn.helpers.exceptions import InvalidRegistrationResponse, InvalidAuthenticationResponse
 
-from neuronaApp.models import Challenges, User, PublicKeys
+from neuronaApp.models import Challenges, User, PublicKeys, ApiKeys
 from neuronaApp.serializers.authentication_serializer import ChallengeSerializer, ChallengeIdSerializer, \
     UsernameSerializer, \
-    EmailSerializer, UsernameOrEmailSerializer
+    EmailSerializer, UsernameOrEmailSerializer, ApiKeySerializer
 
 import webauthn
 import logging
@@ -142,15 +142,18 @@ class RegisterView(APIView):
         email = email_serializer.validated_data["email"]
 
         User(username=username, email=email).save()
-        user_id = User.objects.get(username=username).id
+        user = User.objects.get(username=username)
 
         PublicKeys(
-            user_id=user_id,
+            user=user,
             key=registration_verification.credential_public_key,
             credential_id=registration_verification.credential_id
         ).save()
 
-        return Response({"status": "ok"}, status=201)
+        api_key = ApiKeys(user=user).generate_and_get()
+        api_key_serializer = ApiKeySerializer(api_key)
+
+        return Response({"status": "ok", "token": api_key_serializer.data}, status=201)
 
 
 class LoginView(APIView):
@@ -198,7 +201,11 @@ class LoginView(APIView):
                 credential_public_key=key.key,
                 credential_current_sign_count=0
             )
-            return Response({"status": "ok"}, status=200)
+            api_key = ApiKeys(user=user).generate_and_get()
+            api_key_serializer = ApiKeySerializer(api_key)
+
+            return Response({"status": "ok", "token": api_key_serializer.data}, status=200)
+
         except InvalidAuthenticationResponse as e:
             logger.error(f"authentication_verification: {e}")
             return Response({"message": "Login failed. Please try again."}, status=400)
