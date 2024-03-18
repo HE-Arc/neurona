@@ -129,7 +129,7 @@ class RegisterView(APIView):
         try:
             registration_verification = webauthn.verify_registration_response(
                 credential=credentials,
-                expected_challenge=challenge_data,
+                expected_challenge=challenge_data.tobytes(),
                 expected_origin=request.headers["Origin"],
                 expected_rp_id=getattr(settings, "PASSKEY_RP_ID", "localhost"),
             )
@@ -195,7 +195,7 @@ class LoginView(APIView):
         try:
             authentication_verification = webauthn.verify_authentication_response(
                 credential=credentials,
-                expected_challenge=challenge_data,
+                expected_challenge=challenge_data.tobytes(),
                 expected_origin=request.headers["Origin"],
                 expected_rp_id=getattr(settings, "PASSKEY_RP_ID", "localhost"),
                 credential_public_key=key.key,
