@@ -9,6 +9,7 @@ django = "==5.0.2"
 webauthn = "*"
 django-cors-headers = "*"
 django-environ = "*"
+psycopg2 = "*"
 
 [dev-packages]
 

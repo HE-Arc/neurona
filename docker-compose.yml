@@ -1,7 +1,7 @@
 version: '3.0'
 
 services:
-  api:
+  neurona_api_service:
     build: ./docker-images/django
     container_name: neurona-django
     ports:
@@ -10,7 +10,7 @@ services:
     volumes: 
       - ./api/:/data 
 
-  vuejs:
+  neurona_vuejs_service:
     build: ./docker-images/vuejs
     container_name: neurona-vuejs
     ports:
@@ -20,3 +20,20 @@ services:
     volumes:
       - ./frontend:/data
 
+  neurona_db_service:
+    container_name: neurona-postgres
+    image: postgres:latest
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: neurona
+      POSTGRES_USER: neurona
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+
+  neurona_adminer_service:
+    container_name: neurona-adminer
+    image: adminer:latest
+    ports:
+      - "8080:8080"
