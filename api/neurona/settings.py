@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 
 import environ
+import django
+
 env = environ.Env()
 environ.Env.read_env()
 
@@ -83,7 +85,7 @@ WSGI_APPLICATION = "neurona.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-if env("DATABASE_ENGINE") is not None:
+try:
     DATABASE_ENGINE = env("DATABASE_ENGINE")
     DATABASE_HOST = env("DATABASE_HOST")
     DATABASE_PORT = env("DATABASE_PORT")
@@ -99,7 +101,7 @@ if env("DATABASE_ENGINE") is not None:
         "USER": DATABASE_USER,
         "PASSWORD": DATABASE_PASSWORD,
     }
-else:
+except django.core.exceptions.ImproperlyConfigured:
     default_db = {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
