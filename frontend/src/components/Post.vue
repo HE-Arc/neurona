@@ -57,7 +57,7 @@ function open_post(){
   <v-card
       v-if="mounted"
       :title="props.title"
-      :subtitle="props.author_username + ' on ' + props.space_title"
+      :subtitle="props.author_username"
       :text="props.content"
       :prepend-avatar="props.author_avatar"
       @click="open_post"
