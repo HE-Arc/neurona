@@ -1,19 +1,33 @@
 <script setup>
 import {ref} from 'vue';
+import axios from "axios";
+import routes from "@/api/routes";
+import router from "@/router";
 
 const rules = ref([]);
-const value = ref('');
+const title_rules = ref([]);
+const title = ref('');
+const content = ref('');
 const spaces = ref([]);
 const valid = ref(false);
 
 rules.value = [v => v.length <= 1000 || 'Max 1000 characters'];
-spaces.value = [
-  'ISC1',
-  'ISC2',
-  'ISC3',
-  'apero!!!',
-  'admin',
-]
+title_rules.value = [v => v.length <= 50 || 'Max 50 characters'];
+
+// TODO fetch spaces from API
+spaces.value = []
+
+async function submit(){
+  await axios.post(routes.posts.create, {
+    title: title.value,
+    content: content.value,
+  }, {
+    headers: {
+      Authorization: sessionStorage.getItem('token')
+    }
+  })
+  await router.push({name: 'home'});
+}
 
 </script>
 
@@ -21,31 +35,42 @@ spaces.value = [
   <v-container>
     <v-form v-model="valid">
       <v-autocomplete
-          :items="spaces"
-          prepend-icon="mdi-account"
-          label="Space"
+        :items="spaces"
+        prepend-icon="mdi-account"
+        label="Space"
       >
       </v-autocomplete>
+
+      <v-text-field
+        label="Post title"
+        :rules="title_rules"
+        v-model="title"
+        prepend-icon="mdi-text-box"
+      >
+
+      </v-text-field>
+
+
       <v-textarea
-          counter
-          label="Post content"
-          :rules="rules"
-          :model-value="value"
-          prepend-icon="mdi-text-box-edit"
-          auto-grow
-          clearable
+        counter
+        label="Post content"
+        :rules="rules"
+        v-model="content"
+        prepend-icon="mdi-text-box-edit"
+        auto-grow
+        clearable
       ></v-textarea>
 
       <div
-          class="d-flex flex-row-reverse my-5"
+        class="d-flex flex-row-reverse my-5"
       >
 
         <v-btn
-            type="submit"
-            :disabled="!valid"
-            prepend-icon="mdi-check"
-            color="primary"
-            class="mx-2"
+          :disabled="!valid"
+          prepend-icon="mdi-check"
+          color="primary"
+          class="mx-2"
+          @click="submit"
         >
           Submit
         </v-btn>
@@ -55,7 +80,7 @@ spaces.value = [
           text="Cancel"
           class="mx-2"
           @click="() => $router.go(-1)"
-          />
+        />
       </div>
     </v-form>
   </v-container>

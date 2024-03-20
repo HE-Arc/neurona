@@ -9,7 +9,7 @@ class TokenAuthentication(BaseAuthentication):
         token = request.META.get("HTTP_AUTHORIZATION")
 
         if not token:
-            return None
+            raise AuthenticationFailed("Token not provided")
 
         try:
             token = ApiKeys.objects.get(key=token)

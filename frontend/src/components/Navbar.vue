@@ -22,8 +22,8 @@ const logout_route = {title: 'Log out', icon: 'mdi-logout', to: {name: 'logout'}
 const login_route = {title: 'Login', icon: 'mdi-login', to: {name: 'login'}};
 
 const spaces = [
-  {title: 'ISC1', avatar: 'mdi-account', id: 1, to: 'spaces/1'},
-  {title: 'ISC2', avatar: 'mdi-account', id: 2, to: 'spaces/2'},
+  //{title: 'ISC1', avatar: 'mdi-account', id: 1, to: 'spaces/1'},
+  //{title: 'ISC2', avatar: 'mdi-account', id: 2, to: 'spaces/2'},
 ]
 
 const is_mobile = useDisplay().smAndDown;

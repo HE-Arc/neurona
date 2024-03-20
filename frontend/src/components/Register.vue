@@ -1,14 +1,22 @@
 <script setup>
 
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import {register as PasskeyRegister} from "@/Authentication/Passkey";
 import AlertBanner from "@/components/AlertBanner.vue";
 import routes from "@/api/routes";
 import axios from "axios";
+import router from "@/router";
+import {set_current_auth_state} from "@/Authentication/store";
 
 const username = ref('');
 const email = ref('');
 const messages = ref([]);
+
+onMounted(()=>{
+  if(sessionStorage.getItem('token')){
+    router.push({name: 'home'});
+  }
+});
 
 function add_message(severity, message) {
   messages.value.push({
@@ -48,13 +56,15 @@ function showErrorMessage(e) {
 
 async function register() {
   messages.value = [];
-
-  try {
-    await checkValidity();
-    await PasskeyRegister(username.value, email.value);
-  } catch (e) {
+  await checkValidity();
+  PasskeyRegister(username.value, email.value).then((r) => {
+    add_message('success', 'Registered successfully');
+    sessionStorage.setItem('token', r.data.token.key);
+    set_current_auth_state(true)
+    router.push({name: 'home'})
+  }).catch((e) => {
     showErrorMessage(e);
-  }
+  });
 }
 
 </script>

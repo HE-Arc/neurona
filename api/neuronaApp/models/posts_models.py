@@ -4,11 +4,44 @@ class Posts(models.Model):
     user = models.ForeignKey('User', related_name='posts', on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     content = models.TextField(max_length=1000)
-    space = models.ForeignKey('Spaces', related_name='posts', on_delete=models.CASCADE)
-    tag = models.ForeignKey('Tags', related_name='posts', on_delete=models.CASCADE)
+    space = models.ForeignKey('Spaces', related_name='posts', on_delete=models.CASCADE, null=True)
+    tag = models.ForeignKey('Tags', related_name='posts', on_delete=models.CASCADE, null=True)
     is_archived = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def get_vote_count(self):
+        return self.votes.filter(is_upvote=True).count() - self.votes.filter(is_upvote=False).count()
+
+    def get_comments_count(self):
+        return self.comments.count()
+
+    def has_upvoted(self, user):
+        return self.votes.filter(user=user, is_upvote=True).exists()
+
+    def has_downvoted(self, user):
+        return self.votes.filter(user=user, is_upvote=False).exists()
+
+    def upvote(self, user):
+        vote = self.votes.filter(user=user).first()
+        if vote:
+            vote.is_upvote = True
+            vote.save()
+        else:
+            Votes.objects.create(user=user, post=self, is_upvote=True)
+
+    def downvote(self, user):
+        vote = self.votes.filter(user=user).first()
+        if vote:
+            vote.is_upvote = False
+            vote.save()
+        else:
+            Votes.objects.create(user=user, post=self, is_upvote=False)
+
+    def unvote(self, user):
+        vote = self.votes.filter(user=user).first()
+        if vote:
+            vote.delete()
 
 
 class PostsImages(models.Model):

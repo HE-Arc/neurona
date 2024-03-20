@@ -6,9 +6,17 @@ const routes = {
     register: `${BASE_URL}/register/`,
     login_options: `${BASE_URL}/passkey-options/login/`,
     login: `${BASE_URL}/login/`,
+    logout: `${BASE_URL}/logout/`,
     username_availability: `${BASE_URL}/validity/username/`,
     email_availability: `${BASE_URL}/validity/email/`,
-  }
+  },
+  posts: {
+    create: `${BASE_URL}/posts/`,
+    show: `${BASE_URL}/posts/`,
+    upvote: (id) => `${BASE_URL}/posts/${id}/upvote/`,
+    downvote: (id) => `${BASE_URL}/posts/${id}/downvote/`,
+    unvote: (id) => `${BASE_URL}/posts/${id}/unvote/`,
+  },
 }
 
 export default routes;

@@ -1,60 +1,95 @@
 <script setup>
 import {onMounted, ref} from "vue";
 import router from "@/router";
+import axios from "axios";
+import routes from "@/api/routes";
+import {formatDistanceToNow} from "date-fns";
 
 const props = defineProps({
   id: Number,
+  title: String,
+  content: String,
+  timestamp: String,
+  author_id: Number,
+  author_username: String,
+  author_name: String,
+  author_avatar: String,
+  space_id: Number,
+  space_title: String,
+  comments: Number,
+  votes: Number,
+  has_upvoted: Boolean,
+  has_downvoted: Boolean,
 });
 
-const post = ref({});
-const mounted = ref(false);
-const vote = ref(null);
+
+const post = ref({
+  user_upvoted: props.has_upvoted,
+  user_downvoted: props.has_downvoted,
+  vote_count: props.votes,
+});
+
+const mounted = ref(true);
+const vote = ref(post.value.user_upvoted ? 0 : post.value.user_downvoted ? 1 : null);
 const saved = ref(null);
 const snackbar = ref(false);
 
-onMounted(async () => {
-  await new Promise(resolve => setTimeout(resolve, 500));
-  post.value = {
-    id: props.id,
-    link: "/posts/" + props.id,
-    title: "Hello world",
-    content: "Hello everyone, this is my first post on this platform. " +
-        "I hope you like it. I'm a big fan of penguins, so I'll be posting " +
-        "a lot of penguin-related content. I hope you enjoy it!",
-    vote_count: 12,
-    user_upvoted: false,
-    user_downvoted: true,
-    comments: 3,
-    saved: true,
-    timestamp: "2021-10-10T12:00:00Z",
-    author: {
-      id: 1,
-      username: "kingpenguin",
-      avatar: "https://nzbirdsonline.org.nz/sites/all/files/2X2A1697%20King%20Penguin%20bol.jpg",
-      name: "John Doe",
-    },
-    space: {
-      id: 1,
-      title: "ISC1",
-      avatar: "",
-    },
-  };
-  vote.value = post.value.user_upvoted ? 0 : post.value.user_downvoted ? 1 : null;
-  saved.value = post.value.saved ? 0 : null;
-  mounted.value = true;
+onMounted(()=>{
+  if(post.value.user_upvoted){
+    console.log(`User has upvoted post ${props.id}`);
+  }
 });
+
+
+function vote_(url){
+  axios.post(url, {}, {
+    headers: {
+      Authorization: sessionStorage.getItem('token')
+    }
+  }).then(()=>{
+    console.log('Voted');
+  }).catch((e)=>{
+    console.log(e);
+  });
+}
 
 function toggle_upvote(){
   post.value.user_upvoted = !post.value.user_upvoted;
-  post.value.vote_count += post.value.user_upvoted ? 1 : -1;
-  post.value.vote_count += post.value.user_downvoted ? 1 : 0;
+
+  if(post.value.user_upvoted){
+    post.value.vote_count += 1;
+    const url = routes.posts.upvote(props.id);
+    vote_(url);
+  } else {
+    post.value.vote_count -= 1;
+    const url = routes.posts.unvote(props.id);
+    vote_(url);
+  }
+
+  if(post.value.user_downvoted){
+    post.value.vote_count += 1;
+  }
+
   post.value.user_downvoted = false;
 }
 
 function toggle_downvote(){
   post.value.user_downvoted = !post.value.user_downvoted;
-  post.value.vote_count += post.value.user_downvoted ? -1 : 1;
-  post.value.vote_count += post.value.user_upvoted ? -1 : 0;
+
+  if(post.value.user_downvoted){
+    post.value.vote_count -= 1;
+    const url = routes.posts.downvote(props.id);
+    vote_(url);
+  } else {
+    post.value.vote_count += 1;
+    const url = routes.posts.unvote(props.id);
+    vote_(url);
+  }
+
+  if(post.value.user_upvoted){
+    post.value.vote_count -= 1;
+  }
+
   post.value.user_upvoted = false;
 }
 
@@ -73,10 +108,10 @@ function open_post(){
 
   <v-card
       v-if="mounted"
-      :title="post.author.name"
-      :subtitle="post.author.username + ' on ' + post.space.title"
-      :text="post.content"
-      :prepend-avatar="post.author.avatar"
+      :title="props.title"
+      :subtitle="`${props.author_username} \u00B7 ${formatDistanceToNow(props.timestamp, { addSuffix: true })}`"
+      :text="props.content"
+      :prepend-avatar="props.author_avatar"
       @click="open_post"
       class="ma-4"
       :ripple="false"
