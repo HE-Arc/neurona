@@ -10,6 +10,39 @@ class Posts(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def get_vote_count(self):
+        return self.votes.filter(is_upvote=True).count() - self.votes.filter(is_upvote=False).count()
+
+    def get_comments_count(self):
+        return self.comments.count()
+
+    def has_upvoted(self, user):
+        return self.votes.filter(user=user, is_upvote=True).exists()
+
+    def has_downvoted(self, user):
+        return self.votes.filter(user=user, is_upvote=False).exists()
+
+    def upvote(self, user):
+        vote = self.votes.filter(user=user).first()
+        if vote:
+            vote.is_upvote = True
+            vote.save()
+        else:
+            Votes.objects.create(user=user, post=self, is_upvote=True)
+
+    def downvote(self, user):
+        vote = self.votes.filter(user=user).first()
+        if vote:
+            vote.is_upvote = False
+            vote.save()
+        else:
+            Votes.objects.create(user=user, post=self, is_upvote=False)
+
+    def unvote(self, user):
+        vote = self.votes.filter(user=user).first()
+        if vote:
+            vote.delete()
+
 
 class PostsImages(models.Model):
     post = models.ForeignKey(Posts, related_name='images', on_delete=models.CASCADE)
