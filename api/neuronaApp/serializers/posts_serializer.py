@@ -25,6 +25,7 @@ class PostsComplexSerializer(serializers.ModelSerializer):
             "user",
             "votes_and_comments",
             "title",
+            "created_at",
             "content",
             "space",
             "tag",
