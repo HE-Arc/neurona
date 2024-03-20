@@ -36,6 +36,10 @@ onMounted(() => {
     :author_username="post.user.username"
     :author_name="post.user.display_name"
     :author_avatar="post.user.avatar"
+    :comments="post.votes_and_comments.comments"
+    :votes="post.votes_and_comments.votes"
+    :has_upvoted="post.votes_and_comments.has_upvoted"
+    :has_downvoted="post.votes_and_comments.has_downvoted"
   />
 </template>
 

@@ -1,6 +1,8 @@
 <script setup>
 import {onMounted, ref} from "vue";
 import router from "@/router";
+import axios from "axios";
+import routes from "@/api/routes";
 
 const props = defineProps({
   id: Number,
@@ -13,31 +15,79 @@ const props = defineProps({
   author_avatar: String,
   space_id: Number,
   space_title: String,
+  comments: Number,
+  votes: Number,
+  has_upvoted: Boolean,
+  has_downvoted: Boolean,
 });
 
-const post = ref({});
-const mounted = ref(false);
-const vote = ref(null);
+const post = ref({
+  user_upvoted: props.has_upvoted,
+  user_downvoted: props.has_downvoted,
+  vote_count: props.votes,
+});
+
+const mounted = ref(true);
+const vote = ref(post.value.user_upvoted ? 0 : post.value.user_downvoted ? 1 : null);
 const saved = ref(null);
 const snackbar = ref(false);
 
-onMounted(async () => {
-  vote.value = post.value.user_upvoted ? 0 : post.value.user_downvoted ? 1 : null;
-  saved.value = post.value.saved ? 0 : null;
-  mounted.value = true;
+onMounted(()=>{
+  if(post.value.user_upvoted){
+    console.log(`User has upvoted post ${props.id}`);
+  }
 });
+
+
+function vote_(url){
+  axios.post(url, {}, {
+    headers: {
+      Authorization: sessionStorage.getItem('token')
+    }
+  }).then(()=>{
+    console.log('Voted');
+  }).catch((e)=>{
+    console.log(e);
+  });
+}
 
 function toggle_upvote(){
   post.value.user_upvoted = !post.value.user_upvoted;
-  post.value.vote_count += post.value.user_upvoted ? 1 : -1;
-  post.value.vote_count += post.value.user_downvoted ? 1 : 0;
+
+  if(post.value.user_upvoted){
+    post.value.vote_count += 1;
+    const url = routes.posts.upvote(props.id);
+    vote_(url);
+  } else {
+    post.value.vote_count -= 1;
+    const url = routes.posts.unvote(props.id);
+    vote_(url);
+  }
+
+  if(post.value.user_downvoted){
+    post.value.vote_count += 1;
+  }
+
   post.value.user_downvoted = false;
 }
 
 function toggle_downvote(){
   post.value.user_downvoted = !post.value.user_downvoted;
-  post.value.vote_count += post.value.user_downvoted ? -1 : 1;
-  post.value.vote_count += post.value.user_upvoted ? -1 : 0;
+
+  if(post.value.user_downvoted){
+    post.value.vote_count -= 1;
+    const url = routes.posts.downvote(props.id);
+    vote_(url);
+  } else {
+    post.value.vote_count += 1;
+    const url = routes.posts.unvote(props.id);
+    vote_(url);
+  }
+
+  if(post.value.user_upvoted){
+    post.value.vote_count -= 1;
+  }
+
   post.value.user_upvoted = false;
 }
 

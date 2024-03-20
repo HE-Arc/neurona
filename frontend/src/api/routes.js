@@ -13,6 +13,9 @@ const routes = {
   posts: {
     create: `${BASE_URL}/posts/`,
     show: `${BASE_URL}/posts/`,
+    upvote: (id) => `${BASE_URL}/posts/${id}/upvote/`,
+    downvote: (id) => `${BASE_URL}/posts/${id}/downvote/`,
+    unvote: (id) => `${BASE_URL}/posts/${id}/unvote/`,
   },
 }
 
