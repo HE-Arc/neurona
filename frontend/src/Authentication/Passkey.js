@@ -114,7 +114,7 @@ async function requestLogin(username_or_email, credentials, challenge_id) {
     }
   }
 
-  await axios.post(routes.authentication.login, data);
+  return await axios.post(routes.authentication.login, data);
 }
 
 async function requestRegister(username, email, credentials, challenge_id) {
@@ -132,7 +132,8 @@ async function requestRegister(username, email, credentials, challenge_id) {
 
 async function login(username_or_email) {
   const credentials = await getPublicKeyCredential(username_or_email);
-  await requestLogin(username_or_email, credentials.credentials, credentials.challenge_id);
+  const response = await requestLogin(username_or_email, credentials.credentials, credentials.challenge_id);
+  return response;
 }
 
 async function register(username, email){
