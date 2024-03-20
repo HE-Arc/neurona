@@ -3,6 +3,7 @@ import {onMounted, ref} from "vue";
 import router from "@/router";
 import axios from "axios";
 import routes from "@/api/routes";
+import {formatDistanceToNow} from "date-fns";
 
 const props = defineProps({
   id: Number,
@@ -20,6 +21,7 @@ const props = defineProps({
   has_upvoted: Boolean,
   has_downvoted: Boolean,
 });
+
 
 const post = ref({
   user_upvoted: props.has_upvoted,
@@ -107,7 +109,7 @@ function open_post(){
   <v-card
       v-if="mounted"
       :title="props.title"
-      :subtitle="props.author_username"
+      :subtitle="`${props.author_username} \u00B7 ${formatDistanceToNow(props.timestamp, { addSuffix: true })}`"
       :text="props.content"
       :prepend-avatar="props.author_avatar"
       @click="open_post"

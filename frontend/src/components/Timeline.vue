@@ -15,7 +15,11 @@ onMounted(() => {
       Authorization: sessionStorage.getItem('token')
     }
   }).then((response) => {
-    posts.value = response.data;
+    const all_posts = response.data;
+    all_posts.sort((a, b) => {
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
+    posts.value = all_posts;
   }).catch((e) => {
     sessionStorage.clear();
     router.push({name: "login"});
@@ -31,7 +35,7 @@ onMounted(() => {
     :id="post.id"
     :title="post.title"
     :content="post.content"
-    :timestamp="post.timestamp"
+    :timestamp="`${new Date(post.created_at)}`"
     :author_id="post.user.id"
     :author_username="post.user.username"
     :author_name="post.user.display_name"
