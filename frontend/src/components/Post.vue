@@ -4,6 +4,15 @@ import router from "@/router";
 
 const props = defineProps({
   id: Number,
+  title: String,
+  content: String,
+  timestamp: String,
+  author_id: Number,
+  author_username: String,
+  author_name: String,
+  author_avatar: String,
+  space_id: Number,
+  space_title: String,
 });
 
 const post = ref({});
@@ -13,32 +22,6 @@ const saved = ref(null);
 const snackbar = ref(false);
 
 onMounted(async () => {
-  await new Promise(resolve => setTimeout(resolve, 500));
-  post.value = {
-    id: props.id,
-    link: "/posts/" + props.id,
-    title: "Hello world",
-    content: "Hello everyone, this is my first post on this platform. " +
-        "I hope you like it. I'm a big fan of penguins, so I'll be posting " +
-        "a lot of penguin-related content. I hope you enjoy it!",
-    vote_count: 12,
-    user_upvoted: false,
-    user_downvoted: true,
-    comments: 3,
-    saved: true,
-    timestamp: "2021-10-10T12:00:00Z",
-    author: {
-      id: 1,
-      username: "kingpenguin",
-      avatar: "https://nzbirdsonline.org.nz/sites/all/files/2X2A1697%20King%20Penguin%20bol.jpg",
-      name: "John Doe",
-    },
-    space: {
-      id: 1,
-      title: "ISC1",
-      avatar: "",
-    },
-  };
   vote.value = post.value.user_upvoted ? 0 : post.value.user_downvoted ? 1 : null;
   saved.value = post.value.saved ? 0 : null;
   mounted.value = true;
@@ -73,10 +56,10 @@ function open_post(){
 
   <v-card
       v-if="mounted"
-      :title="post.author.name"
-      :subtitle="post.author.username + ' on ' + post.space.title"
-      :text="post.content"
-      :prepend-avatar="post.author.avatar"
+      :title="props.title"
+      :subtitle="props.author_username + ' on ' + props.space_title"
+      :text="props.content"
+      :prepend-avatar="props.author_avatar"
       @click="open_post"
       class="ma-4"
       :ripple="false"
