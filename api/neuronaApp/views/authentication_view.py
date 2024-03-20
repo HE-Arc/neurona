@@ -14,6 +14,8 @@ from neuronaApp.serializers.authentication_serializer import ChallengeSerializer
 import webauthn
 import logging
 
+from neuronaApp.token_authentication import TokenAuthentication
+
 logger = logging.getLogger('django')
 
 
@@ -209,3 +211,16 @@ class LoginView(APIView):
         except InvalidAuthenticationResponse as e:
             logger.error(f"authentication_verification: {e}")
             return Response({"message": "Login failed. Please try again."}, status=400)
+
+class LogoutView(APIView):
+    """
+    This view is responsible for logging out the user.
+    """
+    authentication_classes = (TokenAuthentication,)
+
+    def post(self, request, **kwargs):
+        user = request.user
+        api_key = request.auth
+        api_key.delete()
+
+        return Response({"status": "ok"}, status=200)

@@ -13,6 +13,7 @@ router.register(r'comments', CommentsViewSet)
 urlpatterns = [
     path("register/", views.RegisterView.as_view(), name="register"),
     path("login/", views.LoginView.as_view(), name="login"),
+    path("logout/", views.LogoutView.as_view(), name="logout"),
     path("", include(router.urls)),
     path('spaces/', views.space_view.get_spaces, name='get_spaces'),
     path('spaces/<int:pk>/', views.space_view.get_space, name='get_space'),
