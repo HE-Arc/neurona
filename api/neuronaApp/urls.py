@@ -20,4 +20,7 @@ urlpatterns = [
     path('spaces/', views.space_view.create_space, name='create_space'),
     path('spaces/<int:pk>/', views.space_view.update_space, name='update_space'),
     path('spaces/<int:pk>/', views.space_view.delete_space, name='delete_space'),
+    path('posts/<int:pk>/upvote/', views.VoteView.as_view(actions={'post': 'upvote'}), name='upvote'),
+    path('posts/<int:pk>/downvote/', views.VoteView.as_view(actions={'post': 'downvote'}), name='downvote'),
+    path('posts/<int:pk>/unvote/', views.VoteView.as_view(actions={'post': 'unvote'}), name='unvote'),
 ]
