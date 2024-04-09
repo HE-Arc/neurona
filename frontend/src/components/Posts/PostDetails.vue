@@ -1,7 +1,7 @@
 <script setup>
 
-import Post from "@/components/Post.vue";
-import Comment from "@/components/Comment.vue";
+import Post from "@/components/Posts/Post.vue";
+import Comment from "@/components/Posts/Comment.vue";
 import ReturnBtn from "@/components/ReturnBtn.vue";
 import {ref} from "vue";
 

@@ -1,6 +1,6 @@
 <script setup>
 
-import Post from "@/components/Post.vue";
+import Post from "@/components/Posts/Post.vue";
 import {onMounted, ref} from "vue";
 import axios from "axios";
 import routes from "@/api/routes";

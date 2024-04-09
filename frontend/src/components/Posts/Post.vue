@@ -109,7 +109,7 @@ function open_post() {
   <v-card
     v-if="mounted"
     :title="props.author_name"
-    :subtitle="`${props.author_username} \u00B7 ${formatDistanceToNow(props.timestamp, { addSuffix: true })}`"
+    :subtitle="`@${props.author_username} \u00B7 ${formatDistanceToNow(props.timestamp, { addSuffix: true })}`"
     :prepend-avatar="props.author_avatar"
     @click="open_post"
     class="ma-4"

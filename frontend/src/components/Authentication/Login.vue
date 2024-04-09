@@ -5,9 +5,11 @@ import {login as passkeyLogin} from "@/Authentication/Passkey";
 import AlertBanner from "@/components/AlertBanner.vue";
 import router from "@/router";
 import {set_current_auth_state} from "@/Authentication/store";
+import MessageManager from "@/tools/MessageManager";
 
 const username = ref('');
-const messages = ref([]);
+
+const messages = MessageManager.getInstance();
 
 onMounted(()=>{
   if(sessionStorage.getItem('token')){
@@ -15,29 +17,22 @@ onMounted(()=>{
   }
 });
 
-function add_message(severity, message) {
-  messages.value.push({
-    type: severity,
-    message: [message]
-  });
-}
-
 async function login(){
   messages.value = [];
   passkeyLogin(username.value).then((r)=>{
-    add_message('success', 'Logged in successfully');
+    messages.add('success', 'Logged in successfully');
     sessionStorage.setItem('token', r.data.token.key);
     router.push({name: 'home'})
     set_current_auth_state(true);
   }).catch((e)=>{
     if (e.isAxiosError){
       if(e.response.status >= 400 && e.response.status < 500){
-        add_message('warning', e.response.data.message);
+        messages.add('warning', e.response.data.message);
       } else {
-        add_message('error', 'An unexpected error occurred while trying to log in');
+        messages.add('error', 'An unexpected error occurred while trying to log in');
       }
     } else {
-      add_message('warning', e.message);
+      messages.add('warning', e.message);
     }
   });
 }
@@ -45,7 +40,6 @@ async function login(){
 </script>
 
 <template>
-  <AlertBanner :messages="messages"/>
 
   <v-form
     class="d-flex justify-center align-center"
