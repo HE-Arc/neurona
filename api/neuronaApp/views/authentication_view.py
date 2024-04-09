@@ -9,7 +9,7 @@ from webauthn.helpers.exceptions import InvalidRegistrationResponse, InvalidAuth
 from neuronaApp.models import Challenges, User, PublicKeys, ApiKeys
 from neuronaApp.serializers.authentication_serializer import ChallengeSerializer, ChallengeIdSerializer, \
     UsernameSerializer, \
-    EmailSerializer, UsernameOrEmailSerializer, ApiKeySerializer
+    EmailSerializer, UsernameOrEmailSerializer, ApiKeySerializer, DisplayNameSerializer
 
 import webauthn
 import logging
@@ -28,7 +28,7 @@ class PasskeyChallengeView(viewsets.ViewSet):
     @action(detail=False, methods=["post"])
     def register(self, request, **kwargs):
         username_serializer = UsernameSerializer(data=request.data)
-        email_serializer = EmailSerializer(data=request.data)
+        display_name_serializer = DisplayNameSerializer(data=request.data)
 
         if not username_serializer.is_valid():
             return Response({
@@ -36,16 +36,16 @@ class PasskeyChallengeView(viewsets.ViewSet):
                 "message": username_serializer.get_error_message()
             }, status=400)
 
-        if not email_serializer.is_valid():
+        if not display_name_serializer.is_valid():
             return Response({
-                "error": email_serializer.errors,
-                "message": email_serializer.get_error_message()
+                "error": display_name_serializer.errors,
+                "message": display_name_serializer.get_error_message()
             }, status=400)
 
         options = webauthn.generate_registration_options(
             rp_name="Neurona",
             rp_id=getattr(settings, "PASSKEY_RP_ID", "localhost"),
-            user_name=email_serializer.validated_data["email"],
+            user_name=username_serializer.validated_data["username"],
         )
 
         challenge = Challenges().generate_and_get(options.challenge)
@@ -97,8 +97,8 @@ class RegisterView(APIView):
         registration_data = request.data.get("data", {})
 
         username_serializer = UsernameSerializer(data=registration_data)
-        email_serializer = EmailSerializer(data=registration_data)
         challenge_id_serializer = ChallengeIdSerializer(data=registration_data)
+        display_name_serializer = DisplayNameSerializer(data=registration_data)
 
         # if the data is not valid, return the errors
         if not username_serializer.is_valid():
@@ -107,10 +107,10 @@ class RegisterView(APIView):
                 "message": username_serializer.get_error_message()
             }, status=400)
 
-        if not email_serializer.is_valid():
+        if not display_name_serializer.is_valid():
             return Response({
-                "error": email_serializer.errors,
-                "message": email_serializer.get_error_message()
+                "error": display_name_serializer.errors,
+                "message": display_name_serializer.get_error_message()
             }, status=400)
 
         if not challenge_id_serializer.is_valid():
@@ -141,9 +141,9 @@ class RegisterView(APIView):
 
         # if the registration response is valid, save the user and the public key in the database
         username = username_serializer.validated_data["username"]
-        email = email_serializer.validated_data["email"]
+        display_name = display_name_serializer.validated_data["display_name"]
 
-        User(username=username, email=email).save()
+        User(username=username, display_name=display_name).save()
         user = User.objects.get(username=username)
 
         PublicKeys(
@@ -177,6 +177,7 @@ class LoginView(APIView):
             }, status=400)
 
         user = user_serializer.get_user()
+        logger.info(f"found user = {user.display_name} @ {user.username}")
 
         if not challenge_id_serializer.is_valid():
             return Response({
@@ -211,6 +212,7 @@ class LoginView(APIView):
         except InvalidAuthenticationResponse as e:
             logger.error(f"authentication_verification: {e}")
             return Response({"message": "Login failed. Please try again."}, status=400)
+
 
 class LogoutView(APIView):
     """

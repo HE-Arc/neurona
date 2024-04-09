@@ -8,7 +8,6 @@ class PostsSerializer(serializers.ModelSerializer):
         model = Posts
         fields = [
             "user",
-            "title",
             "content",
             "space",
             "tag",
@@ -24,7 +23,6 @@ class PostsComplexSerializer(serializers.ModelSerializer):
             "id",
             "user",
             "votes_and_comments",
-            "title",
             "created_at",
             "content",
             "space",

@@ -5,28 +5,30 @@ import routes from "@/api/routes";
 import router from "@/router";
 
 const rules = ref([]);
-const title_rules = ref([]);
-const title = ref('');
 const content = ref('');
 const spaces = ref([]);
 const valid = ref(false);
 
 rules.value = [v => v.length <= 1000 || 'Max 1000 characters'];
-title_rules.value = [v => v.length <= 50 || 'Max 50 characters'];
 
 // TODO fetch spaces from API
 spaces.value = []
 
-async function submit(){
-  await axios.post(routes.posts.create, {
-    title: title.value,
+function submit() {
+  axios.post(routes.posts.create, {
     content: content.value,
   }, {
     headers: {
       Authorization: sessionStorage.getItem('token')
     }
-  })
-  await router.push({name: 'home'});
+  }).then(
+    () => {
+      router.push({name: 'home'});
+    }
+  ).catch((e) => {
+      console.log(e);
+    }
+  )
 }
 
 </script>
@@ -41,19 +43,9 @@ async function submit(){
       >
       </v-autocomplete>
 
-      <v-text-field
-        label="Post title"
-        :rules="title_rules"
-        v-model="title"
-        prepend-icon="mdi-text-box"
-      >
-
-      </v-text-field>
-
-
       <v-textarea
         counter
-        label="Post content"
+        label="What's on your mind?"
         :rules="rules"
         v-model="content"
         prepend-icon="mdi-text-box-edit"

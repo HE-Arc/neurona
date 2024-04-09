@@ -1,11 +1,11 @@
 import axios from "axios";
 import routes from "@/api/routes";
 
-async function fetchRegisterOptions(username, email) {
+async function fetchRegisterOptions(username, name) {
   console.log("route", routes.authentication.register_options);
   return axios.post(routes.authentication.register_options, {
     "username": username,
-    "email": email,
+    "display_name": name,
   });
 }
 
@@ -34,8 +34,8 @@ function BufToBase64url(buf) {
     .replace(/=/g, '');
 }
 
-async function getRegisterCredentialOptions(username, email) {
-  const options_str = await fetchRegisterOptions(username, email);
+async function getRegisterCredentialOptions(username, name) {
+  const options_str = await fetchRegisterOptions(username, name);
   const options = JSON.parse(options_str.data.options);
   const challenge_id = options_str.data.id;
 
@@ -61,8 +61,8 @@ async function getLoginCredentialOptions(username_or_email) {
   }
 }
 
-async function createPublicKeyCredential(username, email) {
-  const credentialOptions = await getRegisterCredentialOptions(username, email);
+async function createPublicKeyCredential(username, name) {
+  const credentialOptions = await getRegisterCredentialOptions(username, name);
   const credentials_ = await navigator.credentials.create({publicKey: credentialOptions.options});
 
   const credentials = {
@@ -117,12 +117,12 @@ async function requestLogin(username_or_email, credentials, challenge_id) {
   return await axios.post(routes.authentication.login, data);
 }
 
-async function requestRegister(username, email, credentials, challenge_id) {
+async function requestRegister(username, name, credentials, challenge_id) {
   const data = {
     credentials: credentials,
     data: {
       username: username,
-      email: email,
+      display_name: name,
       challenge_id: challenge_id
     }
   }
@@ -136,9 +136,9 @@ async function login(username_or_email) {
   return response;
 }
 
-async function register(username, email){
-  const credentials = await createPublicKeyCredential(username, email);
-  return await requestRegister(username, email, credentials.credentials, credentials.challenge_id);
+async function register(username, name){
+  const credentials = await createPublicKeyCredential(username, name);
+  return await requestRegister(username, name, credentials.credentials, credentials.challenge_id);
 }
 
 

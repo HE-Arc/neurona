@@ -5,9 +5,12 @@ import re
 
 USERNAME_MIN_LENGTH = 3
 USERNAME_MAX_LENGTH = 15
+DISPLAY_NAME_MIN_LENGTH = 2
+DISPLAY_NAME_MAX_LENGTH = 50
 
 USERNAME_REGEX = r"^[a-zA-Z][a-zA-Z0-9_]{" + str(USERNAME_MIN_LENGTH) + r"," + str(USERNAME_MAX_LENGTH) + r"}$"
 EMAIL_REGEX = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+
 
 class ChallengeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -40,6 +43,7 @@ class UsernameSerializer(serializers.Serializer):
     def get_error_message(self):
         return self.errors["username"][0]
 
+
 class EmailSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=100)
 
@@ -54,6 +58,23 @@ class EmailSerializer(serializers.Serializer):
 
     def get_error_message(self):
         return self.errors["email"][0]
+
+
+class DisplayNameSerializer(serializers.Serializer):
+    display_name = serializers.CharField(max_length=50)
+
+    def validate_display_name(self, value):
+        if len(value) > DISPLAY_NAME_MAX_LENGTH:
+            raise serializers.ValidationError(f"Display name must be at most {DISPLAY_NAME_MAX_LENGTH} characters long")
+
+        if len(value) < DISPLAY_NAME_MIN_LENGTH:
+            raise serializers.ValidationError(
+                f"Display name must be at least {DISPLAY_NAME_MIN_LENGTH} characters long")
+
+        return value
+
+    def get_error_message(self):
+        return self.errors["display_name"][0]
 
 
 class UsernameOrEmailSerializer(serializers.Serializer):
@@ -100,4 +121,4 @@ class ApiKeySerializer(serializers.HyperlinkedModelSerializer):
         fields = [
             "key",
             "expires_at"
-            ]
+        ]

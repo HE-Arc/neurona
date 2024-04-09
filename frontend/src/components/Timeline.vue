@@ -16,6 +16,7 @@ onMounted(() => {
     }
   }).then((response) => {
     const all_posts = response.data;
+    console.log(all_posts);
     all_posts.sort((a, b) => {
       return new Date(b.created_at) - new Date(a.created_at);
     });
@@ -39,7 +40,7 @@ onMounted(() => {
     :author_id="post.user.id"
     :author_username="post.user.username"
     :author_name="post.user.display_name"
-    :author_avatar="post.user.avatar"
+    :author_avatar="post.user.image_url"
     :comments="post.votes_and_comments.comments"
     :votes="post.votes_and_comments.votes"
     :has_upvoted="post.votes_and_comments.has_upvoted"
