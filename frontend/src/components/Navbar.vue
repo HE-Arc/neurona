@@ -2,8 +2,7 @@
 
 import {onMounted, ref} from 'vue';
 import {useDisplay} from 'vuetify';
-import axios from "axios";
-import routes from "@/api/routes";
+import ApiRequests from "@/api/ApiRequests";
 
 const props = defineProps({
   loggedIn: Boolean,
@@ -35,16 +34,11 @@ const is_mobile = useDisplay().smAndDown;
 drawer.value = !is_mobile.value;
 
 onMounted(() => {
-  axios.get(routes.profile.show, {
-    headers: {
-      Authorization: sessionStorage.getItem('token')
-    }
-  }).then((response) => {
-    user.value = response.data;
+  const req = new ApiRequests();
+  (async () => {
+    user.value = await req.getProfile();
     mounted.value = true;
-  }).catch((e) => {
-    console.log(e);
-  });
+  })();
 });
 
 </script>
@@ -87,7 +81,7 @@ onMounted(() => {
           <v-avatar :image="user.image_url"></v-avatar>
         </template>
         <v-list-item-title>{{user.display_name}}</v-list-item-title>
-        <v-list-item-subtitle>{{user.username}}</v-list-item-subtitle>
+        <v-list-item-subtitle>@{{user.username}}</v-list-item-subtitle>
       </v-list-item>
 
       <v-divider v-if="loggedIn"/>
