@@ -10,6 +10,8 @@ webauthn = "*"
 django-cors-headers = "*"
 django-environ = "*"
 psycopg2 = "*"
+django-rest-swagger = "*"
+drf-yasg = "*"
 
 [dev-packages]
 
