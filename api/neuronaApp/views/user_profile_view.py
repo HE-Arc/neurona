@@ -2,7 +2,8 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from neuronaApp.serializers import UsernameSerializer, EmailSerializer
+from neuronaApp.serializers import UsernameSerializer, EmailSerializer, UserSerializer
+from neuronaApp.token_authentication import TokenAuthentication
 
 
 class Validity(viewsets.ViewSet):
@@ -25,3 +26,10 @@ class Validity(viewsets.ViewSet):
             return Response({"message": serializer.get_error_message()}, status=400)
 
         return Response(status=200)
+
+class Profile(viewsets.ViewSet):
+    authentication_classes = (TokenAuthentication,)
+
+    def list(self, request, *args, **kwargs):
+        user = request.user
+        return Response(UserSerializer(user).data)
