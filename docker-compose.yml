@@ -1,7 +1,7 @@
 version: '3.0'
 
 services:
-  neurona_api_service:
+  neurona-api-service:
     build: ./docker-images/django
     container_name: neurona-django
     ports:
@@ -10,7 +10,20 @@ services:
     volumes: 
       - ./api/:/data 
 
-  neurona_vuejs_service:
+    environment:
+      - PASSKEY_RP_ID=localhost
+      - PASSKEY_ORIGIN=localhost:3000
+      - ALLOWED_HOSTS=localhost,
+      - CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+      - DATABASE_ENGINE=django.db.backends.postgresql
+      - DATABASE_HOST=neurona-db-service
+      - DATABASE_PORT=5432
+      - DATABASE_NAME=neurona
+      - DATABASE_USER=neurona
+      - DATABASE_PASSWORD=password
+      - DEBUG=True
+
+  neurona-vuejs-service:
     build: ./docker-images/vuejs
     container_name: neurona-vuejs
     ports:
@@ -20,7 +33,10 @@ services:
     volumes:
       - ./frontend:/data
 
-  neurona_db_service:
+    environment:
+      - VITE_API_URL=http://localhost:8000/api
+
+  neurona-db-service:
     container_name: neurona-postgres
     image: postgres:latest
     volumes:
@@ -32,7 +48,7 @@ services:
     ports:
       - "5432:5432"
 
-  neurona_adminer_service:
+  neurona-adminer-service:
     container_name: neurona-adminer
     image: adminer:latest
     ports:
