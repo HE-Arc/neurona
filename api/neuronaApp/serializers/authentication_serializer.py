@@ -43,6 +43,20 @@ class UsernameSerializer(serializers.Serializer):
     def get_error_message(self):
         return self.errors["username"][0]
 
+class UsernameLoginSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=100)
+
+    def validate_username(self, value):
+        if not User.objects.filter(username=value).exists():
+            raise serializers.ValidationError("Username not found")
+
+        return value
+
+    def get_user(self):
+        return User.objects.get(username=self.validated_data["username"])
+
+    def get_error_message(self):
+        return self.errors["username"][0]
 
 class EmailSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=100)
