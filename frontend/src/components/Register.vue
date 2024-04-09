@@ -9,11 +9,11 @@ import router from "@/router";
 import {set_current_auth_state} from "@/Authentication/store";
 
 const username = ref('');
-const email = ref('');
+const name = ref('');
 const messages = ref([]);
 
-onMounted(()=>{
-  if(sessionStorage.getItem('token')){
+onMounted(() => {
+  if (sessionStorage.getItem('token')) {
     router.push({name: 'home'});
   }
 });
@@ -26,20 +26,7 @@ function add_message(severity, message) {
 }
 
 async function checkValidity() {
-  await axios.get(routes.authentication.email_availability, {params: {email: email.value}});
   await axios.get(routes.authentication.username_availability, {params: {username: username.value}});
-}
-
-const send_registration = async (credentials, username, email, challenge_id) => {
-  const data = {
-    credentials: credentials,
-    data: {
-      username: username,
-      email: email,
-      challenge_id: challenge_id
-    }
-  }
-  await axios.post(routes.authentication.register, data);
 }
 
 function showErrorMessage(e) {
@@ -56,8 +43,14 @@ function showErrorMessage(e) {
 
 async function register() {
   messages.value = [];
-  await checkValidity();
-  PasskeyRegister(username.value, email.value).then((r) => {
+
+  try{
+    await checkValidity();
+  } catch (e) {
+    showErrorMessage(e);
+    return;
+  }
+  PasskeyRegister(username.value, name.value).then((r) => {
     add_message('success', 'Registered successfully');
     sessionStorage.setItem('token', r.data.token.key);
     set_current_auth_state(true)
@@ -102,14 +95,25 @@ async function register() {
               v-model="username"
               label="Username"
               required
-            />
+            >
+              <v-tooltip
+                activator="parent"
+              >
+                A unique username to identify you
+              </v-tooltip>
+            </v-text-field>
 
             <v-text-field
-              v-model="email"
-              label="email"
+              v-model="name"
+              label="Name"
               required
-              email
-            />
+            >
+              <v-tooltip
+                activator="parent"
+              >
+                Your full name or a nickname
+              </v-tooltip>
+            </v-text-field>
 
             <v-spacer/>
 

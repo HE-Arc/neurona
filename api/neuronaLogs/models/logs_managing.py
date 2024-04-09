@@ -10,7 +10,6 @@ from .logs_models import *
 def save_user_log(instance, action):
     UserLogs(
         user_id=instance.pk,
-        email=instance.email,
         display_name=instance.display_name,
         username=instance.username,
         about=instance.about,
@@ -27,9 +26,6 @@ def user_changes(sender, instance, **kwargs):
     """
     if instance.pk:
         original = sender.objects.get(pk=instance.pk)
-
-        if original.email != instance.email:
-            save_user_log(instance, UserAction.CHANGED_EMAIL)
 
         if original.display_name != instance.display_name:
             save_user_log(instance, UserAction.CHANGED_DISPLAY_NAME)

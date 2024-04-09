@@ -9,6 +9,7 @@ router.register(r'validity', views.Validity, basename='validity')
 router.register(r'passkey-options', views.PasskeyChallengeView, basename='passkey-options')
 router.register(r'posts', PostsViewSet)
 router.register(r'comments', CommentsViewSet)
+router.register(r'profile', views.Profile, basename='profile')
 
 urlpatterns = [
     path("register/", views.RegisterView.as_view(), name="register"),

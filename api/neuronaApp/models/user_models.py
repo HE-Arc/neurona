@@ -35,7 +35,6 @@ class Challenges(models.Model):
 
 class User(models.Model):
     username = models.CharField(max_length=100, unique=True)
-    email = models.EmailField(max_length=100, unique=True)
     display_name = models.CharField(max_length=100, blank=True)
     about = models.TextField(max_length=2000, blank=True)
     image_url = models.URLField(max_length=200, null=True)

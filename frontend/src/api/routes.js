@@ -17,6 +17,9 @@ const routes = {
     downvote: (id) => `${BASE_URL}/posts/${id}/downvote/`,
     unvote: (id) => `${BASE_URL}/posts/${id}/unvote/`,
   },
+  profile: {
+    show: `${BASE_URL}/profile/`,
+  }
 }
 
 export default routes;

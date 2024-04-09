@@ -17,6 +17,7 @@ class PostsViewSet(viewsets.ViewSet):
     def list(self, request, *args, **kwargs):
         queryset = Posts.objects.all()
         serializer = PostsComplexSerializer(queryset, context=request.user, many=True)
+
         return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):

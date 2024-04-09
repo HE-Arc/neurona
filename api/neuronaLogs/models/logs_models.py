@@ -21,7 +21,6 @@ class UserAction(Enum):
 
 class UserLogs(models.Model):
     user_id = models.IntegerField(null=True)
-    email = models.EmailField(max_length=100)
     display_name = models.CharField(max_length=100)
     username = models.CharField(max_length=100)
     about = models.TextField(max_length=2000, blank=True)
