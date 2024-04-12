@@ -4,15 +4,15 @@ import {onMounted, ref} from "vue";
 import {login as passkeyLogin} from "@/Authentication/Passkey";
 import AlertBanner from "@/components/AlertBanner.vue";
 import router from "@/router";
-import {set_current_auth_state} from "@/Authentication/store";
 import MessageManager from "@/tools/MessageManager";
+import store from "@/Authentication/store";
 
 const username = ref('');
 
 const messages = MessageManager.getInstance();
 
 onMounted(()=>{
-  if(sessionStorage.getItem('token')){
+  if(store.state.authenticated){
     router.push({name: 'home'});
   }
 });
@@ -21,9 +21,10 @@ async function login(){
   messages.value = [];
   passkeyLogin(username.value).then((r)=>{
     messages.add('success', 'Logged in successfully');
-    sessionStorage.setItem('token', r.data.token.key);
+    const token = r.data.token.key;
+    store.commit('setToken', token);
+    store.commit('login');
     router.push({name: 'home'})
-    set_current_auth_state(true);
   }).catch((e)=>{
     if (e.isAxiosError){
       if(e.response.status >= 400 && e.response.status < 500){

@@ -6,7 +6,7 @@ import AlertBanner from "@/components/AlertBanner.vue";
 import routes from "@/api/routes";
 import axios from "axios";
 import router from "@/router";
-import {set_current_auth_state} from "@/Authentication/store";
+import store from "@/Authentication/store";
 
 const username = ref('');
 const name = ref('');
@@ -44,7 +44,7 @@ function showErrorMessage(e) {
 async function register() {
   messages.value = [];
 
-  try{
+  try {
     await checkValidity();
   } catch (e) {
     showErrorMessage(e);
@@ -52,8 +52,8 @@ async function register() {
   }
   PasskeyRegister(username.value, name.value).then((r) => {
     add_message('success', 'Registered successfully');
-    sessionStorage.setItem('token', r.data.token.key);
-    set_current_auth_state(true)
+    store.commit('setToken', r.data.token.key);
+    store.commit('login');
     router.push({name: 'home'})
   }).catch((e) => {
     showErrorMessage(e);

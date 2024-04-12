@@ -1,6 +1,7 @@
 import axios from "axios";
 import routes from "@/api/routes";
 import MessageManager from "@/tools/MessageManager";
+import store from "@/Authentication/store";
 
 class ApiRequests {
 
@@ -9,7 +10,7 @@ class ApiRequests {
   }
 
   #getToken() {
-    return sessionStorage.getItem('token');
+    return store.state.token;
   }
 
   #getConfig(auth = true) {

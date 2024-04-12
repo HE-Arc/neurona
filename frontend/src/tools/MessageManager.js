@@ -17,7 +17,9 @@ class MessageManager {
   }
 
   add(severity, message) {
-    console.log("adding message", severity, message);
+    if(message === undefined) {
+      message = "An unknown error occurred";
+    }
     this.messages.value.push({
       type: severity,
       message: [message]
