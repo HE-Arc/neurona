@@ -12,6 +12,7 @@ WORKDIR /data
 
 CMD sh -c "pipenv install && \
 pipenv run pip3 install tzdata && \
-pipenv run python3 manage.py migrate && \
+pipenv run python3 manage.py migrate neuronaApp && \
+pipenv run python3 manage.py migrate neuronaLogs --database logs \
 pipenv run python3 manage.py runserver 0.0.0.0:8000"
 
