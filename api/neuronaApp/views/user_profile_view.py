@@ -37,6 +37,12 @@ class Profile(viewsets.ViewSet):
         user = request.user
         return Response(UserSerializer(user).data)
 
+    @action(detail=False, methods=['delete'])
+    def delete(self, request, *args, **kwargs):
+        user = request.user
+        user.delete()
+        return Response(status=204)
+
     @action(detail=False, methods=["PUT"])
     def username(self, request, *args, **kwargs):
         user = request.user
