@@ -4,6 +4,7 @@ import {computed, onMounted, ref} from 'vue';
 import {useDisplay} from 'vuetify';
 import ApiRequests from "@/api/ApiRequests";
 import store from "@/Authentication/store";
+import EventBus from "@/tools/EventBus";
 
 store.subscribe((mutation) => {
   if(mutation.type === 'login') {
@@ -45,7 +46,7 @@ const is_mobile = useDisplay().smAndDown;
 
 drawer.value = !is_mobile.value;
 
-onMounted(() => {
+function mount(){
   if(!authenticated.value) {
     return;
   }
@@ -54,7 +55,17 @@ onMounted(() => {
     user.value = await req.getProfile();
     mounted.value = true;
   })();
+  EventBus.on('refresh', refresh);
+}
+
+onMounted(() => {
+  mount();
 });
+
+function refresh(){
+  mounted.value = false;
+  mount();
+}
 
 </script>
 
