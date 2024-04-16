@@ -85,11 +85,9 @@ function refresh(){
 
     <v-spacer></v-spacer>
 
-    <v-btn v-if="authenticated" variant="text" icon="mdi-magnify"></v-btn>
-
     <v-tooltip v-if="authenticated" text="Create a new post" location="bottom">
       <template v-slot:activator="{ props }">
-        <v-btn v-bind="props" icon="mdi-pencil" :to="{name: 'posts.create'}"/>
+        <v-btn v-bind="props" icon="mdi-plus-thick" :to="{name: 'posts.create'}"/>
       </template>
     </v-tooltip>
 
