@@ -3,9 +3,40 @@
 import Post from "@/components/Posts/Post.vue";
 import Comment from "@/components/Posts/Comment.vue";
 import ReturnBtn from "@/components/ReturnBtn.vue";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
+import ApiRequests from "@/api/ApiRequests";
+import MessageManager from "@/tools/MessageManager";
+import router from "@/router";
+
+const props = defineProps({
+  id: String,
+})
 
 const dialog = ref(false);
+const post = ref(null);
+const mounted = ref(false);
+const is_author = ref(false);
+
+const req = new ApiRequests();
+
+onMounted(() => {
+  (async () => {
+    window.scrollTo(0, 0);
+    post.value = await req.getPost(props.id);
+
+    const username = (await req.getProfile()).username;
+    is_author.value = post.value.user.username === username;
+
+    mounted.value = true;
+  })();
+});
+
+function deletePost() {
+  req.deletePost(post.value.id).then(() => {
+    MessageManager.getInstance().snackbar('Post deleted successfully.', 5000);
+    router.push({name: 'home'});
+  });
+}
 
 </script>
 
@@ -13,23 +44,24 @@ const dialog = ref(false);
 
 
   <div
-      class="d-flex justify-space-between align-center"
+    class="d-flex justify-space-between align-center"
   >
     <ReturnBtn/>
     <v-btn
-        prepend-icon="mdi-delete"
-        color="error"
-        class="ma-5"
+      v-if="is_author"
+      prepend-icon="mdi-delete"
+      color="error"
+      class="ma-5"
     >
       Delete
 
       <v-dialog
-          v-model="dialog"
-          activator="parent"
-          width="auto"
+        v-model="dialog"
+        activator="parent"
+        width="auto"
       >
         <v-card
-            class="pa-1"
+          class="pa-1"
         >
           <v-card-title
           >
@@ -40,18 +72,18 @@ const dialog = ref(false);
           </v-card-text>
           <v-spacer/>
           <v-card-actions
-              class="d-flex justify-end"
+            class="d-flex justify-end"
           >
             <v-btn
-                @click="dialog = false"
-                prepend-icon="mdi-close"
+              @click="dialog = false"
+              prepend-icon="mdi-close"
             >
               Cancel
             </v-btn>
             <v-btn
-                color="error"
-                @click="dialog = false"
-                prepend-icon="mdi-delete"
+              color="error"
+              @click="deletePost"
+              prepend-icon="mdi-delete"
             >
               Delete
             </v-btn>
@@ -62,20 +94,36 @@ const dialog = ref(false);
     </v-btn>
   </div>
 
-  <Post/>
+  <Post
+    v-if="mounted"
+    :id="post.id"
+    :title="post.title"
+    :content="post.content"
+    :timestamp="`${new Date(post.created_at)}`"
+    :author_id="post.user.id"
+    :author_username="post.user.username"
+    :author_name="post.user.display_name"
+    :author_avatar="post.user.image_url"
+    :comments="post.votes_and_comments.comments"
+    :votes="post.votes_and_comments.votes"
+    :has_upvoted="post.votes_and_comments.has_upvoted"
+    :has_downvoted="post.votes_and_comments.has_downvoted"
+  />
 
   <v-divider/>
 
   <h2
-      class="text-h6 ma-4"
+    class="text-h6 ma-4"
   >
     Comments
   </h2>
 
-  <Comment/>
-  <Comment/>
-  <Comment/>
-  <Comment/>
+
+  <p
+    class="text-body-1 ma-4"
+  >
+    There are no comments yet :(
+  </p>
 
 </template>
 

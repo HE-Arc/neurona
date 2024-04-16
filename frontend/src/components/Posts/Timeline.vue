@@ -6,14 +6,16 @@ import ApiRequests from "@/api/ApiRequests";
 
 const posts = ref([]);
 
+const req = new ApiRequests();
+
 onMounted(() => {
-  new ApiRequests().getPosts()
-    .then((response) => {
-      response.sort((a, b) => {
-        return new Date(b.created_at) - new Date(a.created_at);
-      });
-      posts.value = response;
+  (async () => {
+    const response = await req.getPosts();
+    response.sort((a, b) => {
+      return new Date(b.created_at) - new Date(a.created_at);
     });
+    posts.value = response;
+  })();
 });
 
 </script>
