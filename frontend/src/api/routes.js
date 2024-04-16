@@ -19,6 +19,7 @@ const routes = {
   },
   profile: {
     show: `${BASE_URL}/profile/`,
+    edit: (attribute) => `${BASE_URL}/profile/${attribute}/`,
   }
 }
 
