@@ -92,8 +92,16 @@ class ApiRequests {
     return await this.#post(routes.authentication.logout);
   }
 
+  async deleteAccount(){
+    return await this.#delete(routes.profile.delete);
+  }
+
   async getPosts() {
     return await this.#get(routes.posts.show);
+  }
+
+  async getUserPosts(username) {
+    return await this.#get(routes.posts.user(username));
   }
 
   async createPost(content) {

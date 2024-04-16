@@ -7,6 +7,9 @@ import MessageManager from "@/tools/MessageManager";
 import EditProperty from "@/components/Profile/EditProperty.vue";
 import EventBus from "@/tools/EventBus";
 import ConfirmationDialog from "@/components/Profile/ConfirmationDialog.vue";
+import store from "@/Authentication/store";
+import router from "@/router";
+import UserTimeline from "@/components/Posts/UserTimeline.vue";
 
 const is_mobile = useDisplay().smAndDown;
 const mounted = ref(false);
@@ -17,8 +20,9 @@ const displayNameDialog = ref(false);
 const aboutDialog = ref(false);
 const deleteDialog = ref(false);
 
+const req = new ApiRequests();
+
 onMounted(() => {
-  const req = new ApiRequests();
   (async () => {
     user.value = await req.getProfile();
     mounted.value = true;
@@ -37,7 +41,6 @@ function refreshUsername(username) {
 function refreshDisplayName(display_name) {
   EventBus.emit('refresh');
   (async () => {
-    const req = new ApiRequests();
     user.value = await req.getProfile();
   })();
 }
@@ -47,7 +50,11 @@ function refreshAbout(about) {
 }
 
 function deleteAccount() {
-  MessageManager.getInstance().add('warning', 'This feature is not yet implemented. Contact the administrator for help.');
+  req.deleteAccount().then(() => {
+    MessageManager.getInstance().add('info', 'Your account has been deleted. We are sorry to see you go but we hope to see you again soon :)');
+    store.commit('logout');
+    router.push({name: 'register'})
+  });
 }
 
 </script>
@@ -148,6 +155,11 @@ function deleteAccount() {
       </v-col>
     </v-row>
   </v-container>
+
+  <UserTimeline
+    v-if="mounted"
+    :username="user.username"
+  />
 
   <EditProperty
     v-if="mounted"

@@ -19,7 +19,7 @@ const emit = defineEmits(['update:open', 'confirm']);
 <template>
   <v-dialog
     v-model="props.open"
-    width="400"
+    width="500"
   >
     <v-form>
 
