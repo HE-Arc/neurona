@@ -8,7 +8,8 @@ const props = defineProps({
   name: String,
   attribute_name: String,
   value: String,
-  open: Boolean
+  open: Boolean,
+  area: Boolean
 })
 
 const value_ = ref(props.value);
@@ -21,7 +22,7 @@ function submit(){
     emit('update:open', false);
     emit('refresh', value_.value)
   }).catch((e) => {
-    //MessageManager.getInstance().add('error', 'An error occurred while trying to update');
+    // no need to show error message, it's already been done by the request class itself
     emit('update:open', false);
   });
 }
@@ -40,11 +41,20 @@ function submit(){
           Edit {{ name }}
         </v-card-title>
         <v-card-text>
+
           <v-text-field
             v-model="value_"
             :label="name"
+            v-if="!props.area"
           >
           </v-text-field>
+
+          <v-textarea
+            v-model="value_"
+            :label="name"
+            v-else
+          >
+          </v-textarea>
 
         </v-card-text>
         <v-card-actions>
