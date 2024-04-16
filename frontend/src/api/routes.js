@@ -16,9 +16,12 @@ const routes = {
     upvote: (id) => `${BASE_URL}/posts/${id}/upvote/`,
     downvote: (id) => `${BASE_URL}/posts/${id}/downvote/`,
     unvote: (id) => `${BASE_URL}/posts/${id}/unvote/`,
+    user: (username) => `${BASE_URL}/posts/user/${username}/`,
   },
   profile: {
     show: `${BASE_URL}/profile/`,
+    edit: (attribute) => `${BASE_URL}/profile/${attribute}/`,
+    delete: `${BASE_URL}/profile/`,
   }
 }
 

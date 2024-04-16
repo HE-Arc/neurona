@@ -1,13 +1,13 @@
 import {createRouter, createWebHistory} from "vue-router";
 import HelloWorld from "@/components/HelloWorld.vue";
 import Test from "@/views/Test.vue";
-import Timeline from "@/components/Timeline.vue";
-import PostWriting from "@/components/PostWriting.vue";
-import Profile from "@/components/Profile.vue";
-import PostDetails from "@/components/PostDetails.vue";
-import Login from "@/components/Login.vue";
-import Logout from "@/components/Logout.vue";
-import Register from "@/components/Register.vue";
+import Timeline from "@/components/Posts/Timeline.vue";
+import PostWriting from "@/components/Posts/PostWriting.vue";
+import Profile from "@/components/Profile/Profile.vue";
+import PostDetails from "@/components/Posts/PostDetails.vue";
+import Login from "@/components/Authentication/Login.vue";
+import Logout from "@/components/Authentication/Logout.vue";
+import Register from "@/components/Authentication/Register.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

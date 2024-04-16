@@ -1,7 +1,9 @@
 <template>
   <v-app>
-    <Navbar :logged-in="state.authenticated"/>
+    <Navbar />
     <v-main>
+      <AlertBanner :messages="messages"/>
+      <SnackbarMessage :message="snack.message" :timeout="snack.timeout"/>
       <router-view/>
     </v-main>
   </v-app>
@@ -10,6 +12,10 @@
 <script setup>
 //
 import Navbar from "@/components/Navbar.vue";
-import {state} from "@/Authentication/store";
+import AlertBanner from "@/components/alerts/AlertBanner.vue";
+import MessageManager from "@/tools/MessageManager";
+import SnackbarMessage from "@/components/alerts/SnackbarMessage.vue";
+const messages = MessageManager.getInstance().get();
+const snack = MessageManager.getInstance().getSnackbar();
 
 </script>

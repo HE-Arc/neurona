@@ -1,32 +1,24 @@
 <script setup>
 
-import Post from "@/components/Post.vue";
+import Post from "@/components/Posts/Post.vue";
 import {onMounted, ref} from "vue";
-import axios from "axios";
-import routes from "@/api/routes";
-import router from "@/router";
+import ApiRequests from "@/api/ApiRequests";
 
 const posts = ref([]);
 
-onMounted(() => {
-  console.log(sessionStorage.getItem('token'));
-  axios.get(routes.posts.show, {
-    headers: {
-      Authorization: sessionStorage.getItem('token')
-    }
-  }).then((response) => {
-    const all_posts = response.data;
-    console.log(all_posts);
-    all_posts.sort((a, b) => {
-      return new Date(b.created_at) - new Date(a.created_at);
-    });
-    posts.value = all_posts;
-  }).catch((e) => {
-    sessionStorage.clear();
-    router.push({name: "login"});
-  });
-});
+const props = defineProps({
+  username: String,
+})
 
+onMounted(() => {
+  new ApiRequests().getUserPosts(props.username)
+    .then((response) => {
+      response.sort((a, b) => {
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
+      posts.value = response;
+    });
+});
 </script>
 
 <template>

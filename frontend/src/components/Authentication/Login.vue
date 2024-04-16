@@ -2,50 +2,48 @@
 
 import {onMounted, ref} from "vue";
 import {login as passkeyLogin} from "@/Authentication/Passkey";
-import AlertBanner from "@/components/AlertBanner.vue";
 import router from "@/router";
-import {set_current_auth_state} from "@/Authentication/store";
+import MessageManager from "@/tools/MessageManager";
+import store from "@/Authentication/store";
 
 const username = ref('');
-const messages = ref([]);
+
+const messages = MessageManager.getInstance();
 
 onMounted(()=>{
-  if(sessionStorage.getItem('token')){
+  if(store.state.authenticated){
     router.push({name: 'home'});
   }
 });
 
-function add_message(severity, message) {
-  messages.value.push({
-    type: severity,
-    message: [message]
-  });
-}
-
 async function login(){
   messages.value = [];
   passkeyLogin(username.value).then((r)=>{
-    add_message('success', 'Logged in successfully');
-    sessionStorage.setItem('token', r.data.token.key);
+    messages.add('success', 'Logged in successfully');
+    const token = r.data.token.key;
+    store.commit('setToken', token);
+    store.commit('login');
     router.push({name: 'home'})
-    set_current_auth_state(true);
   }).catch((e)=>{
     if (e.isAxiosError){
       if(e.response.status >= 400 && e.response.status < 500){
-        add_message('warning', e.response.data.message);
+        messages.add('warning', e.response.data.message);
       } else {
-        add_message('error', 'An unexpected error occurred while trying to log in');
+        messages.add('error', 'An unexpected error occurred while trying to log in');
       }
     } else {
-      add_message('warning', e.message);
+      messages.add('warning', e.message);
     }
   });
+}
+
+function recover(){
+  messages.add('warning', 'This feature is not yet implemented. Contact the administrator for help.');
 }
 
 </script>
 
 <template>
-  <AlertBanner :messages="messages"/>
 
   <v-form
     class="d-flex justify-center align-center"
@@ -115,6 +113,7 @@ async function login(){
               Don't have access to your passkey?
               <a
                 href="#"
+                @click="recover"
                 class="text-grey-darken-2"
               >
                 Use a recovery code instead

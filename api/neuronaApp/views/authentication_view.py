@@ -9,7 +9,7 @@ from webauthn.helpers.exceptions import InvalidRegistrationResponse, InvalidAuth
 from neuronaApp.models import Challenges, User, PublicKeys, ApiKeys
 from neuronaApp.serializers.authentication_serializer import ChallengeSerializer, ChallengeIdSerializer, \
     UsernameSerializer, \
-    EmailSerializer, UsernameOrEmailSerializer, ApiKeySerializer, DisplayNameSerializer
+    EmailSerializer, UsernameOrEmailSerializer, ApiKeySerializer, DisplayNameSerializer, UsernameLoginSerializer
 
 import webauthn
 import logging
@@ -60,12 +60,12 @@ class PasskeyChallengeView(viewsets.ViewSet):
 
     @action(detail=False, methods=["post"])
     def login(self, request, **kwargs):
-        username_or_email_serializer = UsernameOrEmailSerializer(data=request.data)
+        username_serializer = UsernameLoginSerializer(data=request.data)
 
-        if not username_or_email_serializer.is_valid():
+        if not username_serializer.is_valid():
             return Response({
-                "error": username_or_email_serializer.errors,
-                "message": username_or_email_serializer.get_error_message()
+                "error": username_serializer.errors,
+                "message": username_serializer.get_error_message()
             }, status=400)
 
         options = webauthn.generate_authentication_options(
@@ -167,7 +167,7 @@ class LoginView(APIView):
         credentials = request.data.get("credentials", {})
         data = request.data.get("data", {})
 
-        user_serializer = UsernameOrEmailSerializer(data=data)
+        user_serializer = UsernameLoginSerializer(data=data)
         challenge_id_serializer = ChallengeIdSerializer(data=data)
 
         if not user_serializer.is_valid():

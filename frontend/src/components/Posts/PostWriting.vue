@@ -1,8 +1,8 @@
 <script setup>
 import {ref} from 'vue';
-import axios from "axios";
-import routes from "@/api/routes";
 import router from "@/router";
+import ApiRequests from "@/api/ApiRequests";
+import MessageManager from "@/tools/MessageManager";
 
 const rules = ref([]);
 const content = ref('');
@@ -15,20 +15,13 @@ rules.value = [v => v.length <= 1000 || 'Max 1000 characters'];
 spaces.value = []
 
 function submit() {
-  axios.post(routes.posts.create, {
-    content: content.value,
-  }, {
-    headers: {
-      Authorization: sessionStorage.getItem('token')
-    }
-  }).then(
-    () => {
-      router.push({name: 'home'});
-    }
-  ).catch((e) => {
-      console.log(e);
-    }
-  )
+  new ApiRequests().createPost(content.value)
+    .then(
+      () => {
+        MessageManager.getInstance().snackbar('Post created successfully', 5000);
+        router.push({name: 'home'});
+      }
+    );
 }
 
 </script>
@@ -36,10 +29,12 @@ function submit() {
 <template>
   <v-container>
     <v-form v-model="valid">
+      <!-- TODO remove v-if attribute once spaces are fetched -->
       <v-autocomplete
         :items="spaces"
         prepend-icon="mdi-account"
         label="Space"
+        v-if="false"
       >
       </v-autocomplete>
 

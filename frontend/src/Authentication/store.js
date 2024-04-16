@@ -1,19 +1,30 @@
-import {reactive, ref} from "vue";
+import {createStore, useStore} from "vuex";
+import createPersistedState from 'vuex-persistedstate';
 
-const state_ref = ref(false);
+const store = createStore({
+  state() {
+    return {
+      authenticated: false,
+      token: null,
+    }
+  },
+  mutations: {
+    logout(state) {
+      state.authenticated = false
+    },
+    login(state) {
+      state.authenticated = true
+    },
+    setToken(state, token) {
+      state.token = token
+    }
+  },
+  plugins: [
+    createPersistedState({
+      storage: window.sessionStorage,
+      paths: ['authenticated', 'token']
+    })
+  ]
+})
 
-export function get_current_auth_state() {
-  if (state_ref.value === false) {
-    state_ref.value = sessionStorage.getItem("token") !== undefined;
-  }
-  return state_ref;
-}
-
-export function set_current_auth_state(state) {
-  sessionStorage.setItem("authenticated", state);
-  state_ref.value = state;
-}
-
-export const state = reactive({
-  authenticated: get_current_auth_state(),
-});
+export default store;

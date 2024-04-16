@@ -2,16 +2,15 @@ import axios from "axios";
 import routes from "@/api/routes";
 
 async function fetchRegisterOptions(username, name) {
-  console.log("route", routes.authentication.register_options);
   return axios.post(routes.authentication.register_options, {
     "username": username,
     "display_name": name,
   });
 }
 
-async function fetchLoginOptions(username_or_email) {
+async function fetchLoginOptions(username) {
   return axios.post(routes.authentication.login_options, {
-    "username_or_email": username_or_email,
+    "username": username,
   });
 }
 
@@ -105,12 +104,12 @@ async function getPublicKeyCredential(username_or_email) {
   }
 }
 
-async function requestLogin(username_or_email, credentials, challenge_id) {
+async function requestLogin(username, credentials, challenge_id) {
   const data = {
     credentials: credentials,
     data: {
       challenge_id: challenge_id,
-      username_or_email: username_or_email,
+      username: username,
     }
   }
 
@@ -130,10 +129,9 @@ async function requestRegister(username, name, credentials, challenge_id) {
   return await axios.post(routes.authentication.register, data);
 }
 
-async function login(username_or_email) {
-  const credentials = await getPublicKeyCredential(username_or_email);
-  const response = await requestLogin(username_or_email, credentials.credentials, credentials.challenge_id);
-  return response;
+async function login(username) {
+  const credentials = await getPublicKeyCredential(username);
+  return await requestLogin(username, credentials.credentials, credentials.challenge_id);
 }
 
 async function register(username, name){
