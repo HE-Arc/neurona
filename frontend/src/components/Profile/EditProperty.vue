@@ -8,7 +8,6 @@ const props = defineProps({
   name: String,
   attribute_name: String,
   value: String,
-  unique: Boolean,
   open: Boolean
 })
 
