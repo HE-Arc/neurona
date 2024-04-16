@@ -12,9 +12,9 @@
 <script setup>
 //
 import Navbar from "@/components/Navbar.vue";
-import AlertBanner from "@/components/AlertBanner.vue";
+import AlertBanner from "@/components/alerts/AlertBanner.vue";
 import MessageManager from "@/tools/MessageManager";
-import SnackbarMessage from "@/components/SnackbarMessage.vue";
+import SnackbarMessage from "@/components/alerts/SnackbarMessage.vue";
 const messages = MessageManager.getInstance().get();
 const snack = MessageManager.getInstance().getSnackbar();
 

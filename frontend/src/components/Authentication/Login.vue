@@ -2,7 +2,6 @@
 
 import {onMounted, ref} from "vue";
 import {login as passkeyLogin} from "@/Authentication/Passkey";
-import AlertBanner from "@/components/AlertBanner.vue";
 import router from "@/router";
 import MessageManager from "@/tools/MessageManager";
 import store from "@/Authentication/store";

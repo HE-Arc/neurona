@@ -1,7 +1,5 @@
 <script setup>
 import router from "@/router";
-import axios from "axios";
-import routes from "@/api/routes";
 import store from "@/Authentication/store";
 
 axios.post(routes.authentication.logout, {}, {

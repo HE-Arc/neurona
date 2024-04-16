@@ -2,11 +2,11 @@
 
 import {onMounted, ref} from "vue";
 import {register as PasskeyRegister} from "@/Authentication/Passkey";
-import AlertBanner from "@/components/AlertBanner.vue";
 import routes from "@/api/routes";
 import axios from "axios";
 import router from "@/router";
 import store from "@/Authentication/store";
+import MessageManager from "@/tools/MessageManager";
 
 const username = ref('');
 const name = ref('');

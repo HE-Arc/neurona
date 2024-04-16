@@ -8,7 +8,6 @@ import PostDetails from "@/components/Posts/PostDetails.vue";
 import Login from "@/components/Authentication/Login.vue";
 import Logout from "@/components/Authentication/Logout.vue";
 import Register from "@/components/Authentication/Register.vue";
-import ProfileEditing from "@/components/Profile/ProfileEditing.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -51,14 +50,6 @@ const router = createRouter({
       component: Profile,
       meta: {
         title: "Profile",
-      },
-    },
-    {
-      path: "/profile/edit",
-      name: "profile.edit",
-      component: ProfileEditing,
-      meta: {
-        title: "Edit profile",
       },
     },
     {

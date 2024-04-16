@@ -2,7 +2,6 @@ import axios from "axios";
 import routes from "@/api/routes";
 
 async function fetchRegisterOptions(username, name) {
-  console.log("route", routes.authentication.register_options);
   return axios.post(routes.authentication.register_options, {
     "username": username,
     "display_name": name,
@@ -132,8 +131,7 @@ async function requestRegister(username, name, credentials, challenge_id) {
 
 async function login(username) {
   const credentials = await getPublicKeyCredential(username);
-  const response = await requestLogin(username, credentials.credentials, credentials.challenge_id);
-  return response;
+  return await requestLogin(username, credentials.credentials, credentials.challenge_id);
 }
 
 async function register(username, name){
