@@ -14,6 +14,21 @@ class PostsViewSet(viewsets.ViewSet):
     queryset = Posts.objects.all()
     authentication_classes = (TokenAuthentication,)
 
+    def destroy(self, request, pk=None):
+        post = Posts.objects.get(id=pk)
+
+        if request.user.id != post.user_id:
+            return Response({"message": "You cannot delete this post because you aren't its author"}, status=403)
+
+        post.delete()
+        return Response(status=204)
+
+    def retrieve(self, request, pk=None):
+        post = Posts.objects.get(id=pk)
+        serializer = PostsComplexSerializer(post, context=request.user, many=False)
+
+        return Response(serializer.data, 200)
+
     def list(self, request, *args, **kwargs):
         queryset = Posts.objects.all()
         serializer = PostsComplexSerializer(queryset, context=request.user, many=True)
