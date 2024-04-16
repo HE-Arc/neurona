@@ -199,7 +199,7 @@ function deleteAccount() {
     header="DANGER ZONE"
     message="Are you sure you want to delete your account? This action cannot be undone. All your data will be lost. There is no way to recover your account. Are you sure you want to proceed?"
     confirm-label="Yes, delete my account"
-    confirm-icon="mdi-alert-octagon"
+    confirm-icon="mdi-alert"
     :open="deleteDialog"
     @update:open="deleteDialog = $event"
     @confirm="deleteAccount"
