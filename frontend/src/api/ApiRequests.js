@@ -100,6 +100,14 @@ class ApiRequests {
     return await this.#get(routes.posts.show);
   }
 
+  async getPost(postId) {
+    return await this.#get(routes.posts.get(postId));
+  }
+
+  async deletePost(postId) {
+    return await this.#delete(routes.posts.delete(postId));
+  }
+
   async getUserPosts(username) {
     return await this.#get(routes.posts.user(username));
   }

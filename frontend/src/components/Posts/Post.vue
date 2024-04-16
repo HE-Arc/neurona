@@ -102,7 +102,7 @@ function toggle_save() {
 }
 
 function open_post() {
-  router.push({path: post.value.link});
+  router.push({name: 'posts.show', params: {id: props.id}});
 }
 
 </script>

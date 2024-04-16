@@ -12,7 +12,9 @@ const routes = {
   },
   posts: {
     create: `${BASE_URL}/posts/`,
+    get: (id) => `${BASE_URL}/posts/${id}/`,
     show: `${BASE_URL}/posts/`,
+    delete: (id) => `${BASE_URL}/posts/${id}/`,
     upvote: (id) => `${BASE_URL}/posts/${id}/upvote/`,
     downvote: (id) => `${BASE_URL}/posts/${id}/downvote/`,
     unvote: (id) => `${BASE_URL}/posts/${id}/unvote/`,

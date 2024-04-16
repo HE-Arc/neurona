@@ -56,6 +56,7 @@ const router = createRouter({
       path: "/posts/:id",
       name: "posts.show",
       component: PostDetails,
+      props: true,
       meta: {
         title: "Post details",
       },
