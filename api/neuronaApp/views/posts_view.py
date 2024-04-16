@@ -4,7 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from neuronaApp.models import Posts, Comments
+from neuronaApp.models import Posts, Comments, User
 from neuronaApp.serializers import PostsSerializer, CommentsSerializer, UserSerializer, PostsComplexSerializer
 from neuronaApp.token_authentication import TokenAuthentication
 from neuronaApp.views.authentication_view import logger
@@ -18,6 +18,13 @@ class PostsViewSet(viewsets.ViewSet):
         queryset = Posts.objects.all()
         serializer = PostsComplexSerializer(queryset, context=request.user, many=True)
 
+        return Response(serializer.data)
+
+    @action(detail=False, methods=["get"], url_path='user/(?P<username>[^/.]+)')
+    def user(self, request, username=None):
+        user_id = User.objects.get(username__exact=username).id
+        queryset = Posts.objects.filter(user_id__exact=user_id)
+        serializer = PostsComplexSerializer(queryset, context=request.user, many=True)
         return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
