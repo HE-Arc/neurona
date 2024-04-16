@@ -32,12 +32,12 @@ async function checkValidity() {
 function showErrorMessage(e) {
   if (e.isAxiosError) {
     if (e.response.status >= 400 && e.response.status < 500) {
-      add_message('warning', e.response.data.message);
+      MessageManager.getInstance().add('warning', e.response.data.message);
     } else {
-      add_message('error', 'An unexpected error occurred while trying to register');
+      MessageManager.getInstance().add('error', 'An unexpected error occurred while trying to register');
     }
   } else {
-    add_message('warning', e.message);
+    MessageManager.getInstance().add('error', e.message);
   }
 }
 
@@ -51,7 +51,7 @@ async function register() {
     return;
   }
   PasskeyRegister(username.value, name.value).then((r) => {
-    add_message('success', 'Registered successfully');
+    MessageManager.getInstance().add('success', 'Registered successfully');
     store.commit('setToken', r.data.token.key);
     store.commit('login');
     router.push({name: 'home'})
@@ -63,8 +63,6 @@ async function register() {
 </script>
 
 <template>
-  <AlertBanner :messages="messages"/>
-
   <v-form
     class="d-flex justify-center align-center"
   >

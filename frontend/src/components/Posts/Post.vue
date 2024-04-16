@@ -2,8 +2,8 @@
 import {onMounted, ref} from "vue";
 import router from "@/router";
 import axios from "axios";
-import routes from "@/api/routes";
 import {formatDistanceToNow} from "date-fns";
+import ApiRequests from "@/api/ApiRequests";
 
 const props = defineProps({
   id: Number,
@@ -34,14 +34,9 @@ const vote = ref(post.value.user_upvoted ? 0 : post.value.user_downvoted ? 1 : n
 const saved = ref(null);
 const snackbar = ref(false);
 
-onMounted(() => {
-  if (post.value.user_upvoted) {
-    console.log(`User has upvoted post ${props.id}`);
-  }
-});
+const req = new ApiRequests();
 
-
-function vote_(url) {
+function __vote_(url) {
   axios.post(url, {}, {
     headers: {
       Authorization: sessionStorage.getItem('token')
@@ -53,17 +48,27 @@ function vote_(url) {
   });
 }
 
+function upvote(postId) {
+  req.upvote(postId);
+}
+
+function downvote(postId) {
+  req.downvote(postId);
+}
+
+function unvote(postId) {
+  req.unvote(postId);
+}
+
 function toggle_upvote() {
   post.value.user_upvoted = !post.value.user_upvoted;
 
   if (post.value.user_upvoted) {
     post.value.vote_count += 1;
-    const url = routes.posts.upvote(props.id);
-    vote_(url);
+    upvote(props.id);
   } else {
     post.value.vote_count -= 1;
-    const url = routes.posts.unvote(props.id);
-    vote_(url);
+    unvote(props.id);
   }
 
   if (post.value.user_downvoted) {
@@ -78,12 +83,10 @@ function toggle_downvote() {
 
   if (post.value.user_downvoted) {
     post.value.vote_count -= 1;
-    const url = routes.posts.downvote(props.id);
-    vote_(url);
+    downvote(props.id);
   } else {
     post.value.vote_count += 1;
-    const url = routes.posts.unvote(props.id);
-    vote_(url);
+    unvote(props.id);
   }
 
   if (post.value.user_upvoted) {

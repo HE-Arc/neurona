@@ -6,8 +6,7 @@ import ApiRequests from "@/api/ApiRequests";
 import MessageManager from "@/tools/MessageManager";
 import EditProperty from "@/components/Profile/EditProperty.vue";
 import EventBus from "@/tools/EventBus";
-import store from "@/Authentication/store";
-import router from "@/router";
+import ConfirmationDialog from "@/components/Profile/ConfirmationDialog.vue";
 
 const is_mobile = useDisplay().smAndDown;
 const mounted = ref(false);
@@ -16,17 +15,13 @@ const user = ref(null);
 const usernameDialog = ref(false);
 const displayNameDialog = ref(false);
 const aboutDialog = ref(false);
+const deleteDialog = ref(false);
 
 onMounted(() => {
   const req = new ApiRequests();
   (async () => {
-    try{
-      user.value = await req.getProfile();
-      mounted.value = true;
-    } catch (e) {
-      store.commit('logout');
-      await router.push({name: "login"});
-    }
+    user.value = await req.getProfile();
+    mounted.value = true;
   })();
 });
 
@@ -34,12 +29,12 @@ function editImage() {
   MessageManager.getInstance().add('warning', 'You cannot edit your profile image yet.');
 }
 
-function refreshUsername(username){
+function refreshUsername(username) {
   user.value.username = username;
   EventBus.emit('refresh');
 }
 
-function refreshDisplayName(display_name){
+function refreshDisplayName(display_name) {
   EventBus.emit('refresh');
   (async () => {
     const req = new ApiRequests();
@@ -47,8 +42,12 @@ function refreshDisplayName(display_name){
   })();
 }
 
-function refreshAbout(about){
+function refreshAbout(about) {
   user.value.about = about;
+}
+
+function deleteAccount() {
+  MessageManager.getInstance().add('warning', 'This feature is not yet implemented. Contact the administrator for help.');
 }
 
 </script>
@@ -129,7 +128,7 @@ function refreshAbout(about){
           class="ma-1 px-2"
           color="primary"
           width="250px"
-          prepend-icon="mdi-account-edit"
+          prepend-icon="mdi-text-account"
           @click="aboutDialog = true"
         >
           Edit about
@@ -142,6 +141,7 @@ function refreshAbout(about){
           color="error"
           width="250px"
           prepend-icon="mdi-account-remove"
+          @click="deleteDialog = true"
         >
           Delete account
         </v-btn>
@@ -182,6 +182,16 @@ function refreshAbout(about){
     @refresh="refreshAbout"
   />
 
+  <ConfirmationDialog
+    v-if="mounted"
+    header="DANGER ZONE"
+    message="Are you sure you want to delete your account? This action cannot be undone. All your data will be lost. There is no way to recover your account. Are you sure you want to proceed?"
+    confirm-label="Yes, delete my account"
+    confirm-icon="mdi-alert-octagon"
+    :open="deleteDialog"
+    @update:open="deleteDialog = $event"
+    @confirm="deleteAccount"
+    />
 
 </template>
 

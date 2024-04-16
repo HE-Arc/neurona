@@ -37,6 +37,10 @@ async function login(){
   });
 }
 
+function recover(){
+  messages.add('warning', 'This feature is not yet implemented. Contact the administrator for help.');
+}
+
 </script>
 
 <template>
@@ -109,6 +113,7 @@ async function login(){
               Don't have access to your passkey?
               <a
                 href="#"
+                @click="recover"
                 class="text-grey-darken-2"
               >
                 Use a recovery code instead

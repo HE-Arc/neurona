@@ -2,52 +2,38 @@
 
 import Post from "@/components/Posts/Post.vue";
 import {computed, onMounted, ref} from "vue";
-import axios from "axios";
-import routes from "@/api/routes";
-import router from "@/router";
-import store from "@/Authentication/store";
+import ApiRequests from "@/api/ApiRequests";
 
 const posts = ref([]);
 
-const loggedIn = computed(() => {
-  return store.state.authenticated;
-});
-
 onMounted(() => {
-  axios.get(routes.posts.show, {
-    headers: {
-      Authorization: store.state.token,
-    }
-  }).then((response) => {
-    const all_posts = response.data;
-    all_posts.sort((a, b) => {
-      return new Date(b.created_at) - new Date(a.created_at);
+  new ApiRequests().getPosts()
+    .then((response) => {
+      response.sort((a, b) => {
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
+      posts.value = response;
     });
-    posts.value = all_posts;
-  }).catch((e) => {
-    store.commit('logout');
-    router.push({name: "login"});
-  });
 });
 
 </script>
 
 <template>
   <Post
-      v-for="post in posts" :key="post.id"
-      v-bind="post"
-      :id="post.id"
-      :title="post.title"
-      :content="post.content"
-      :timestamp="`${new Date(post.created_at)}`"
-      :author_id="post.user.id"
-      :author_username="post.user.username"
-      :author_name="post.user.display_name"
-      :author_avatar="post.user.image_url"
-      :comments="post.votes_and_comments.comments"
-      :votes="post.votes_and_comments.votes"
-      :has_upvoted="post.votes_and_comments.has_upvoted"
-      :has_downvoted="post.votes_and_comments.has_downvoted"
+    v-for="post in posts" :key="post.id"
+    v-bind="post"
+    :id="post.id"
+    :title="post.title"
+    :content="post.content"
+    :timestamp="`${new Date(post.created_at)}`"
+    :author_id="post.user.id"
+    :author_username="post.user.username"
+    :author_name="post.user.display_name"
+    :author_avatar="post.user.image_url"
+    :comments="post.votes_and_comments.comments"
+    :votes="post.votes_and_comments.votes"
+    :has_upvoted="post.votes_and_comments.has_upvoted"
+    :has_downvoted="post.votes_and_comments.has_downvoted"
   />
 </template>
 

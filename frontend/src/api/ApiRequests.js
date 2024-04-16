@@ -2,6 +2,7 @@ import axios from "axios";
 import routes from "@/api/routes";
 import MessageManager from "@/tools/MessageManager";
 import store from "@/Authentication/store";
+import router from "@/router";
 
 class ApiRequests {
 
@@ -45,7 +46,12 @@ class ApiRequests {
       return response.data;
     } catch (e) {
       try {
-        if (e.response.status >= 400 && e.response.status < 500) {
+        if (e.response.status === 403 || e.response.status === 401) {
+          this.messages.add('warning', 'Please log in to access this page.');
+          store.commit('logout');
+          await router.push({name: "login"});
+        }
+        else if (e.response.status >= 400 && e.response.status < 500) {
           this.messages.add('warning', e.response.data.message);
         } else {
           this.messages.add('error', 'An unexpected error occurred while trying to contact the API server');
@@ -81,6 +87,31 @@ class ApiRequests {
   async updateProfile(attribute, value) {
     return await this.#put(routes.profile.edit(attribute), {[attribute]: value});
   }
+
+  async logout(){
+    return await this.#post(routes.authentication.logout);
+  }
+
+  async getPosts() {
+    return await this.#get(routes.posts.show);
+  }
+
+  async createPost(content) {
+    return await this.#post(routes.posts.create, {content: content});
+  }
+
+  async upvote(postId) {
+    return await this.#post(routes.posts.upvote(postId));
+  }
+
+  async downvote(postId) {
+    return await this.#post(routes.posts.downvote(postId));
+  }
+
+  async unvote(postId) {
+    return await this.#post(routes.posts.unvote(postId));
+  }
+
 }
 
 export default ApiRequests;
