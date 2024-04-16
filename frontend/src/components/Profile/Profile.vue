@@ -66,8 +66,6 @@ onMounted(() => {
 
   </div>
 
-
-
 </template>
 
 <style scoped>

@@ -55,6 +55,7 @@ class ApiRequests {
           'Please try again later or contact the administrator if the problem persists.');
       }
     }
+    throw new Error('An error occurred while trying to contact the API server');
   }
 
   async #get(url = {}, auth = true) {
@@ -77,6 +78,9 @@ class ApiRequests {
     return await this.#get(routes.profile.show);
   }
 
+  async updateProfile(attribute, value) {
+    return await this.#put(routes.profile.edit(attribute), {[attribute]: value});
+  }
 }
 
 export default ApiRequests;
