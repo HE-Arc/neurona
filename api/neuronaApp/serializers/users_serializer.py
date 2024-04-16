@@ -16,6 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
             "username",
             "display_name",
             "image_url",
+            "about",
         ]
 
     def to_representation(self, instance):
