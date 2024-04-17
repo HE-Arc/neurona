@@ -134,9 +134,8 @@ function open_post() {
       >
         <v-btn
           prepend-icon="mdi-comment"
-        >
-          {{ post.comments }}
-        </v-btn>
+          :text="props.comments"
+        />
       </v-btn-toggle>
 
       <v-spacer/>

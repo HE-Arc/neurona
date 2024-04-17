@@ -136,6 +136,22 @@ class ApiRequests {
     return await this.#post(routes.posts.comments(postId), {content: content});
   }
 
+  async deleteComment(commentId) {
+    return await this.#delete(routes.comments.delete(commentId));
+  }
+
+  async upvoteComment(commentId) {
+    return await this.#post(routes.comments.upvote(commentId));
+  }
+
+  async downvoteComment(commentId) {
+    return await this.#post(routes.comments.downvote(commentId));
+  }
+
+  async unvoteComment(commentId) {
+    return await this.#post(routes.comments.unvote(commentId));
+  }
+
 }
 
 export default ApiRequests;

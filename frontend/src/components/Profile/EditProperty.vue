@@ -57,7 +57,9 @@ function submit(){
           </v-textarea>
 
         </v-card-text>
-        <v-card-actions>
+        <v-card-actions
+          class="d-flex justify-end"
+        >
           <v-btn
             prepend-icon="mdi-close"
             @click="() => emit('update:open', false)"

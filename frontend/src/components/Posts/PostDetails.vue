@@ -7,6 +7,7 @@ import ApiRequests from "@/api/ApiRequests";
 import MessageManager from "@/tools/MessageManager";
 import router from "@/router";
 import NewComment from "@/components/Posts/NewComment.vue";
+import Comment from "@/components/Posts/Comment.vue";
 
 const props = defineProps({
   id: String,
@@ -21,6 +22,17 @@ const is_author = ref(false);
 
 const req = new ApiRequests();
 
+
+async function fetchComments(){
+  const response = (await req.getComments(props.id));
+  response.sort((a, b) => {
+    return new Date(b.created_at) - new Date(a.created_at);
+  });
+
+  comments.value = response;
+  post.value.votes_and_comments.comments = comments.value.length;
+}
+
 onMounted(() => {
   (async () => {
     window.scrollTo(0, 0);
@@ -29,9 +41,7 @@ onMounted(() => {
     const username = (await req.getProfile()).username;
     is_author.value = post.value.user.username === username;
 
-    const comments = (await req.getComments(props.id));
-    console.log(comments);
-
+    await fetchComments();
     mounted.value = true;
   })();
 });
@@ -44,7 +54,10 @@ function deletePost() {
 }
 
 function refreshComments(){
-  console.log('Refreshing comments');
+  console.log("Refreshing comments...");
+  (async () => {
+    await fetchComments();
+  })();
 }
 
 </script>
@@ -135,15 +148,32 @@ function refreshComments(){
       prepend-icon="mdi-comment"
       @click="commentDialog = true"
     >
-      Add comment
+      New comment
     </v-btn>
   </div>
   <p
     class="text-body-1 ma-4"
+    v-if="comments.length === 0"
   >
     There are no comments yet :(
   </p>
 
+
+  <Comment
+    v-for="comment in comments" :key="comment.id"
+    v-bind="comment"
+    :id="comment.id"
+    :content="comment.content"
+    :timestamp="`${new Date(comment.created_at)}`"
+    :author_id="comment.user.id"
+    :author_username="comment.user.username"
+    :author_name="comment.user.display_name"
+    :author_avatar="comment.user.image_url"
+    :votes="comment.votes.votes"
+    :has_upvoted="comment.votes.has_upvoted"
+    :has_downvoted="comment.votes.has_downvoted"
+    @refresh="refreshComments"
+  />
 
   <NewComment
     v-if="mounted"

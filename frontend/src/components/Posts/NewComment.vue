@@ -9,13 +9,14 @@ const props = defineProps({
   postId: String,
 })
 
-const value_ = ref(props.value);
+const value_ = ref("");
 const emit = defineEmits(['update:open', 'refresh']);
 
 function submit(){
   const req = new ApiRequests();
   req.createComment(props.postId, value_.value).then(() => {
     MessageManager.getInstance().snackbar('Created successfully');
+    value_.value = "";
     emit('update:open', false);
     emit('refresh', value_.value)
   }).catch((e) => {
