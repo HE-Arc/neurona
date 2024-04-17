@@ -36,18 +36,6 @@ const snackbar = ref(false);
 
 const req = new ApiRequests();
 
-function __vote_(url) {
-  axios.post(url, {}, {
-    headers: {
-      Authorization: sessionStorage.getItem('token')
-    }
-  }).then(() => {
-    console.log('Voted');
-  }).catch((e) => {
-    console.log(e);
-  });
-}
-
 function upvote(postId) {
   req.upvote(postId);
 }
@@ -146,9 +134,8 @@ function open_post() {
       >
         <v-btn
           prepend-icon="mdi-comment"
-        >
-          {{ post.comments }}
-        </v-btn>
+          :text="props.comments"
+        />
       </v-btn-toggle>
 
       <v-spacer/>

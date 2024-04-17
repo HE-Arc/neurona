@@ -5,20 +5,18 @@ import ApiRequests from "@/api/ApiRequests";
 import MessageManager from "@/tools/MessageManager";
 
 const props = defineProps({
-  name: String,
-  attribute_name: String,
-  value: String,
   open: Boolean,
-  area: Boolean
+  postId: String,
 })
 
-const value_ = ref(props.value);
+const value_ = ref("");
 const emit = defineEmits(['update:open', 'refresh']);
 
 function submit(){
   const req = new ApiRequests();
-  req.updateProfile(props.attribute_name, value_.value).then(() => {
-    MessageManager.getInstance().snackbar('Updated successfully');
+  req.createComment(props.postId, value_.value).then(() => {
+    MessageManager.getInstance().snackbar('Created successfully');
+    value_.value = "";
     emit('update:open', false);
     emit('refresh', value_.value)
   }).catch((e) => {
@@ -38,28 +36,18 @@ function submit(){
 
       <v-card>
         <v-card-title>
-          Edit {{ name }}
+          Add a new comment
         </v-card-title>
         <v-card-text>
 
-          <v-text-field
-            v-model="value_"
-            :label="name"
-            v-if="!props.area"
-          >
-          </v-text-field>
-
           <v-textarea
             v-model="value_"
-            :label="name"
-            v-else
+            label="comment"
           >
           </v-textarea>
 
         </v-card-text>
-        <v-card-actions
-          class="d-flex justify-end"
-        >
+        <v-card-actions>
           <v-btn
             prepend-icon="mdi-close"
             @click="() => emit('update:open', false)"
