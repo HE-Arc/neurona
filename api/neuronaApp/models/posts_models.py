@@ -73,7 +73,7 @@ class Comments(models.Model):
             vote.is_upvote = True
             vote.save()
         else:
-            Votes.objects.create(user=user, comment=self, is_upvote=True)
+            CommentsVotes.objects.create(user=user, comment=self, is_upvote=True)
 
     def downvote(self, user):
         vote = self.votes.filter(user=user).first()
@@ -81,7 +81,7 @@ class Comments(models.Model):
             vote.is_upvote = False
             vote.save()
         else:
-            Votes.objects.create(user=user, comment=self, is_upvote=False)
+            CommentsVotes.objects.create(user=user, comment=self, is_upvote=False)
 
     def unvote(self, user):
         vote = self.votes.filter(user=user).first()
