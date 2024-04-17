@@ -77,31 +77,76 @@ class PostsViewSet(viewsets.ViewSet):
 
 
 class CommentsViewSet(viewsets.ViewSet):
-  pass
+    authentication_classes = (TokenAuthentication,)
 
+    def destroy(self, request, pk=None):
+        comment = Comments.objects.get(id=pk)
 
+        if request.user.id != comment.user_id:
+            return Response({"message": "You cannot delete this comment because you aren't its author"}, status=403)
 
+        comment.delete()
+        return Response(status=204)
+
+    @action(detail=True, methods=["post"])
+    def upvote(self, request, pk=None):
+        try:
+            comment = Comments.objects.get(id=pk)
+            comment.upvote(request.user)
+            return Response(status=200)
+        except Comments.DoesNotExist as e:
+            return Response(status=404)
+
+    @action(detail=True, methods=["post"])
+    def downvote(self, request, pk=None):
+        try:
+            comment = Comments.objects.get(id=pk)
+            comment.downvote(request.user)
+            return Response(status=200)
+        except Comments.DoesNotExist as e:
+            return Response(status=404)
+
+    @action(detail=True, methods=["post"])
+    def unvote(self, request, pk=None):
+        try:
+            comment = Comments.objects.get(id=pk)
+            comment.unvote(request.user)
+            return Response(status=200)
+        except Comments.DoesNotExist as e:
+            return Response(status=404)
 
 class VoteView(viewsets.ViewSet):
     authentication_classes = (TokenAuthentication,)
 
     @action(detail=True, methods=["post"])
     def upvote(self, request, pk):
-        post = Posts.objects.get(pk=pk)
-        user = request.user
-        post.upvote(user)
-        return Response(status=200)
+        try:
+            post = Posts.objects.get(pk=pk)
+            user = request.user
+            post.upvote(user)
+            return Response(status=200)
+
+        except Comments.DoesNotExist as e:
+            return Response(status=404)
 
     @action(detail=True, methods=["post"])
     def downvote(self, request, pk):
-        post = Posts.objects.get(pk=pk)
-        user = request.user
-        post.downvote(user)
-        return Response(status=200)
+        try:
+            post = Posts.objects.get(pk=pk)
+            user = request.user
+            post.downvote(user)
+            return Response(status=200)
+
+        except Comments.DoesNotExist as e:
+            return Response(status=404)
 
     @action(detail=True, methods=["post"])
     def unvote(self, request, pk):
-        post = Posts.objects.get(pk=pk)
-        user = request.user
-        post.unvote(user)
-        return Response(status=200)
+        try:
+            post = Posts.objects.get(pk=pk)
+            user = request.user
+            post.unvote(user)
+            return Response(status=200)
+
+        except Comments.DoesNotExist as e:
+            return Response(status=404)
