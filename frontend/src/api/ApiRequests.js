@@ -128,6 +128,14 @@ class ApiRequests {
     return await this.#post(routes.posts.unvote(postId));
   }
 
+  async getComments(postId) {
+    return await this.#get(routes.posts.comments(postId));
+  }
+
+  async createComment(postId, content) {
+    return await this.#post(routes.posts.comments(postId), {content: content});
+  }
+
 }
 
 export default ApiRequests;

@@ -1,19 +1,21 @@
 <script setup>
 
 import Post from "@/components/Posts/Post.vue";
-import Comment from "@/components/Posts/Comment.vue";
 import ReturnBtn from "@/components/ReturnBtn.vue";
 import {onMounted, ref} from "vue";
 import ApiRequests from "@/api/ApiRequests";
 import MessageManager from "@/tools/MessageManager";
 import router from "@/router";
+import NewComment from "@/components/Posts/NewComment.vue";
 
 const props = defineProps({
   id: String,
 })
 
-const dialog = ref(false);
+const removeDialog = ref(false);
+const commentDialog = ref(false);
 const post = ref(null);
+const comments = ref([]);
 const mounted = ref(false);
 const is_author = ref(false);
 
@@ -27,6 +29,9 @@ onMounted(() => {
     const username = (await req.getProfile()).username;
     is_author.value = post.value.user.username === username;
 
+    const comments = (await req.getComments(props.id));
+    console.log(comments);
+
     mounted.value = true;
   })();
 });
@@ -36,6 +41,10 @@ function deletePost() {
     MessageManager.getInstance().snackbar('Post deleted successfully.', 5000);
     router.push({name: 'home'});
   });
+}
+
+function refreshComments(){
+  console.log('Refreshing comments');
 }
 
 </script>
@@ -56,7 +65,7 @@ function deletePost() {
       Delete
 
       <v-dialog
-        v-model="dialog"
+        v-model="removeDialog"
         activator="parent"
         width="auto"
       >
@@ -75,7 +84,7 @@ function deletePost() {
             class="d-flex justify-end"
           >
             <v-btn
-              @click="dialog = false"
+              @click="removeDialog = false"
               prepend-icon="mdi-close"
             >
               Cancel
@@ -112,18 +121,38 @@ function deletePost() {
 
   <v-divider/>
 
-  <h2
-    class="text-h6 ma-4"
+  <div
+    class="d-flex justify-space-between align-center"
   >
-    Comments
-  </h2>
-
-
+    <h2
+      class="text-h6 ma-4"
+    >
+      Comments
+    </h2>
+    <v-btn
+      color="primary"
+      class="ma-4"
+      prepend-icon="mdi-comment"
+      @click="commentDialog = true"
+    >
+      Add comment
+    </v-btn>
+  </div>
   <p
     class="text-body-1 ma-4"
   >
     There are no comments yet :(
   </p>
+
+
+  <NewComment
+    v-if="mounted"
+    title="Add a new comment"
+    :post-id="post.id"
+    :open="commentDialog"
+    @update:open="commentDialog = $event"
+    @refresh="refreshComments"
+  />
 
 </template>
 
