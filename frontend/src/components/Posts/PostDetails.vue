@@ -54,7 +54,6 @@ function deletePost() {
 }
 
 function refreshComments(){
-  console.log("Refreshing comments...");
   (async () => {
     await fetchComments();
   })();
@@ -130,6 +129,7 @@ function refreshComments(){
     :votes="post.votes_and_comments.votes"
     :has_upvoted="post.votes_and_comments.has_upvoted"
     :has_downvoted="post.votes_and_comments.has_downvoted"
+    :is_saved="post.is_saved"
   />
 
   <v-divider/>

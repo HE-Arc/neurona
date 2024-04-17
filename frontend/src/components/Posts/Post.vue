@@ -20,18 +20,20 @@ const props = defineProps({
   votes: Number,
   has_upvoted: Boolean,
   has_downvoted: Boolean,
+  is_saved: Boolean,
 });
 
+const saved = ref(props.is_saved ? 0 : null);
 
 const post = ref({
   user_upvoted: props.has_upvoted,
   user_downvoted: props.has_downvoted,
   vote_count: props.votes,
+  saved: props.is_saved,
 });
 
 const mounted = ref(true);
 const vote = ref(post.value.user_upvoted ? 0 : post.value.user_downvoted ? 1 : null);
-const saved = ref(null);
 const snackbar = ref(false);
 
 const req = new ApiRequests();
@@ -86,7 +88,14 @@ function toggle_downvote() {
 
 function toggle_save() {
   post.value.saved = !post.value.saved;
-  snackbar.value = post.value.saved;
+  (async () => {
+    if (post.value.saved) {
+      await req.savePost(props.id);
+      snackbar.value = true;
+    } else {
+      await req.unsavePost(props.id);
+    }
+  })();
 }
 
 function open_post() {

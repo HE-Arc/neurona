@@ -43,6 +43,9 @@ class Posts(models.Model):
         if vote:
             vote.delete()
 
+    def is_saved(self, user):
+        return self.saved.filter(user=user).exists()
+
 
 class PostsImages(models.Model):
     post = models.ForeignKey(Posts, related_name='images', on_delete=models.CASCADE)
@@ -89,6 +92,7 @@ class Comments(models.Model):
             vote.delete()
 
 
+
 class CommentsImages(models.Model):
     comment = models.ForeignKey(Comments, related_name='images', on_delete=models.CASCADE)
     image_url = models.URLField(max_length=200)
@@ -108,5 +112,11 @@ class CommentsVotes(models.Model):
     user = models.ForeignKey('User', related_name='comments_votes', on_delete=models.CASCADE)
     comment = models.ForeignKey(Comments, related_name='votes', on_delete=models.CASCADE)
     is_upvote = models.BooleanField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+class SavedPosts(models.Model):
+    user = models.ForeignKey('User', related_name='saved', on_delete=models.CASCADE)
+    post = models.ForeignKey('Posts', related_name='saved', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

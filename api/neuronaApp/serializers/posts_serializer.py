@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from neuronaApp.models import Posts, Comments, PostsImages, CommentsImages, Votes, CommentsVotes
+from neuronaApp.models import Posts, Comments, PostsImages, CommentsImages, Votes, CommentsVotes, SavedPosts
 from neuronaApp.serializers.users_serializer import UserSerializer
 
 
@@ -16,6 +16,7 @@ class PostsSerializer(serializers.ModelSerializer):
 class PostsComplexSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     votes_and_comments = serializers.SerializerMethodField()
+    is_saved = serializers.SerializerMethodField()
 
     class Meta:
         model = Posts
@@ -27,6 +28,7 @@ class PostsComplexSerializer(serializers.ModelSerializer):
             "content",
             "space",
             "tag",
+            "is_saved",
         ]
 
     def get_votes_and_comments(self, obj):
@@ -40,6 +42,10 @@ class PostsComplexSerializer(serializers.ModelSerializer):
             "has_upvoted": has_upvoted,
             "has_downvoted": has_downvoted
         }
+
+    def get_is_saved(self, obj):
+        return obj.is_saved(self.context)
+
 
 class CommentsSerializer(serializers.ModelSerializer):
     class Meta:
