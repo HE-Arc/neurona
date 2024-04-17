@@ -10,7 +10,7 @@ const req = new ApiRequests();
 
 onMounted(() => {
   (async () => {
-    const response = await req.getPosts();
+    const response = await req.getSavedPosts();
     response.sort((a, b) => {
       return new Date(b.created_at) - new Date(a.created_at);
     });

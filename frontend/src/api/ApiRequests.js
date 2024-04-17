@@ -152,6 +152,18 @@ class ApiRequests {
     return await this.#post(routes.comments.unvote(commentId));
   }
 
+  async savePost(postId) {
+    return await this.#post(routes.posts.save(postId));
+  }
+
+  async unsavePost(postId) {
+    return await this.#delete(routes.posts.save(postId));
+  }
+
+  async getSavedPosts() {
+    return await this.#get(routes.posts.get_saved);
+  }
+
 }
 
 export default ApiRequests;

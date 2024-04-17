@@ -2,13 +2,12 @@ from django.shortcuts import render, get_object_or_404
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
-from neuronaApp.models import Posts, Comments, User
+from neuronaApp.models import Posts, Comments, User, SavedPosts
 from neuronaApp.serializers import PostsSerializer, CommentsSerializer, UserSerializer, PostsComplexSerializer, \
     CommentsComplexSerializer
 from neuronaApp.token_authentication import TokenAuthentication
-from neuronaApp.views.authentication_view import logger
+from neuronaApp.views import logger
 
 
 class PostsViewSet(viewsets.ViewSet):
@@ -75,6 +74,32 @@ class PostsViewSet(viewsets.ViewSet):
 
         return Response(serializer.errors, status=400)
 
+
+    @action(detail=True, methods=['post'])
+    def save(self, request, pk=None):
+        if not SavedPosts.objects.filter(user_id=request.user.id, post_id=pk).exists():
+            saved = SavedPosts(user_id=request.user.id, post_id=pk)
+            saved.save()
+            return Response(status=201)
+        else:
+            return Response(status=200)
+
+    @save.mapping.delete
+    def unsave(self, request, pk=None):
+        try:
+            user_id = request.user.id
+            saved = SavedPosts.objects.filter(user_id=user_id, post_id=pk)
+            saved.delete()
+            return Response(status=204)
+        except SavedPosts.DoesNotExist as e:
+            return Response(status=200)
+
+
+    @action(detail=False, methods=['get'])
+    def saved(self, request):
+        posts = Posts.objects.filter(saved__user=request.user)
+        serializer = PostsComplexSerializer(posts, context=request.user, many=True)
+        return Response(serializer.data, status=200)
 
 class CommentsViewSet(viewsets.ViewSet):
     authentication_classes = (TokenAuthentication,)

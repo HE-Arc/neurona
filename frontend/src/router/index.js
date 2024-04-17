@@ -8,6 +8,7 @@ import PostDetails from "@/components/Posts/PostDetails.vue";
 import Login from "@/components/Authentication/Login.vue";
 import Logout from "@/components/Authentication/Logout.vue";
 import Register from "@/components/Authentication/Register.vue";
+import SavedPosts from "@/components/Posts/SavedPosts.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -85,7 +86,7 @@ const router = createRouter({
     {
       path: "/saved",
       name: "saved",
-      component: HelloWorld,
+      component: SavedPosts,
       meta: {
         title: "Saved posts",
       },
