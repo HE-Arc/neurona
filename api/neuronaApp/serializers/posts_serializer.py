@@ -44,7 +44,34 @@ class PostsComplexSerializer(serializers.ModelSerializer):
 class CommentsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comments
-        fields = '__all__'
+        fields = [
+            "user",
+            "post",
+            "content"
+        ]
+
+class CommentsComplexSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    votes = serializers.SerializerMethodField()
+    class Meta:
+        model = Comments
+        fields = [
+            "id",
+            "user",
+            "votes",
+            "created_at",
+            "content"
+        ]
+
+    def get_votes(self, obj):
+        votes = obj.get_vote_count()
+        has_upvoted = obj.has_upvoted(self.context)
+        has_downvoted = obj.has_downvoted(self.context)
+        return {
+            "votes": votes,
+            "has_upvoted": has_upvoted,
+            "has_downvoted": has_downvoted
+        }
 
 
 class VotesAndCommentsSerializers(serializers.Serializer):

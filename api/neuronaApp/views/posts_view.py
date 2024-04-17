@@ -5,7 +5,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from neuronaApp.models import Posts, Comments, User
-from neuronaApp.serializers import PostsSerializer, CommentsSerializer, UserSerializer, PostsComplexSerializer
+from neuronaApp.serializers import PostsSerializer, CommentsSerializer, UserSerializer, PostsComplexSerializer, \
+    CommentsComplexSerializer
 from neuronaApp.token_authentication import TokenAuthentication
 from neuronaApp.views.authentication_view import logger
 
@@ -54,9 +55,31 @@ class PostsViewSet(viewsets.ViewSet):
         return Response(serializer.errors, status=400)
 
 
-class CommentsViewSet(viewsets.ModelViewSet):
-    queryset = Comments.objects.all()
-    serializer_class = CommentsSerializer
+    @action(detail=True, methods=['get'], url_path='comments')
+    def get_comments(self, request, pk=None):
+        comments = Comments.objects.filter(post_id=pk)
+        serializer = CommentsComplexSerializer(comments, context=request.user, many=True)
+
+        return Response(serializer.data, status=200)
+
+    @get_comments.mapping.post
+    def create_comment(self, request, pk=None):
+        data = request.data.copy()
+        data['user'] = request.user.id
+        data['post'] = pk
+        serializer = CommentsSerializer(data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+
+        return Response(serializer.errors, status=400)
+
+
+class CommentsViewSet(viewsets.ViewSet):
+  pass
+
+
 
 
 class VoteView(viewsets.ViewSet):
