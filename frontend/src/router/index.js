@@ -18,15 +18,7 @@ const router = createRouter({
       name: "home",
       component: Timeline,
       meta: {
-        title: "Neurona",
-      },
-    },
-    {
-      path: "/test",
-      name: "test",
-      component: Test,
-      meta: {
-        title: "Test",
+        title: "Home",
       },
     },
     {
@@ -101,6 +93,11 @@ const router = createRouter({
     }
 
   ]
+});
+
+router.beforeEach((to, from, next) => {
+  document.title = `Neurona | ${to.meta.title}` || 'Neurona';
+  next();
 });
 
 export default router;
