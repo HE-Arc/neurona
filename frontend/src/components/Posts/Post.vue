@@ -163,7 +163,6 @@ function open_post() {
     </v-card-actions>
   </v-card>
 
-  <v-skeleton-loader v-else type="card" class="mx-4"></v-skeleton-loader>
 
   <v-snackbar
     v-model="snackbar"

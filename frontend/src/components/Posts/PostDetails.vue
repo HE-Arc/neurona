@@ -69,7 +69,7 @@ function refreshComments(){
   >
     <ReturnBtn/>
     <v-btn
-      v-if="is_author"
+      v-if="mounted && is_author"
       prepend-icon="mdi-delete"
       color="error"
       class="ma-5"
@@ -132,6 +132,8 @@ function refreshComments(){
     :is_saved="post.is_saved"
   />
 
+  <v-skeleton-loader v-else type="card" class="ma-4" />
+
   <v-divider/>
 
   <div
@@ -143,6 +145,7 @@ function refreshComments(){
       Comments
     </h2>
     <v-btn
+      v-if="mounted"
       color="primary"
       class="ma-4"
       prepend-icon="mdi-comment"
@@ -153,13 +156,14 @@ function refreshComments(){
   </div>
   <p
     class="text-body-1 ma-4"
-    v-if="comments.length === 0"
+    v-if="comments.length === 0 && mounted"
   >
     There are no comments yet :(
   </p>
 
 
   <Comment
+    v-if="mounted"
     v-for="comment in comments" :key="comment.id"
     v-bind="comment"
     :id="comment.id"
@@ -174,6 +178,9 @@ function refreshComments(){
     :has_downvoted="comment.votes.has_downvoted"
     @refresh="refreshComments"
   />
+
+  <v-skeleton-loader v-else type="card" class="ma-4" />
+
 
   <NewComment
     v-if="mounted"
