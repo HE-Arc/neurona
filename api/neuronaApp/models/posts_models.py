@@ -47,6 +47,7 @@ class Posts(models.Model):
         return self.saved.filter(user=user).exists()
 
 
+# Image model a ne pas modifier 
 class PostsImages(models.Model):
     post = models.ForeignKey(Posts, related_name='images', on_delete=models.CASCADE)
     image_url = models.URLField(max_length=200)
