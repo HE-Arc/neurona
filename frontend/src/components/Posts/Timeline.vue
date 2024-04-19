@@ -5,6 +5,7 @@ import {computed, onMounted, ref} from "vue";
 import ApiRequests from "@/api/ApiRequests";
 
 const posts = ref([]);
+const mounted = ref(false);
 
 const req = new ApiRequests();
 
@@ -15,6 +16,7 @@ onMounted(() => {
       return new Date(b.created_at) - new Date(a.created_at);
     });
     posts.value = response;
+    mounted.value = true;
   })();
 });
 
@@ -22,6 +24,7 @@ onMounted(() => {
 
 <template>
   <Post
+    v-if="mounted"
     v-for="post in posts" :key="post.id"
     v-bind="post"
     :id="post.id"
@@ -37,6 +40,13 @@ onMounted(() => {
     :has_upvoted="post.votes_and_comments.has_upvoted"
     :has_downvoted="post.votes_and_comments.has_downvoted"
     :is-saved="post.is_saved"
+  />
+
+  <v-skeleton-loader
+    v-else
+    v-for="i in 5"
+    type="card"
+    class="ma-4"
   />
 </template>
 
