@@ -4,6 +4,7 @@ import {onMounted, ref} from 'vue';
 import {formatDistanceToNow} from "date-fns";
 import MessageManager from "@/tools/MessageManager";
 import ApiRequests from "@/api/ApiRequests";
+import router from "@/router";
 
 const vote = ref(null);
 const removeDialog = ref(false);
@@ -80,15 +81,49 @@ function deleteComment() {
   })();
 }
 
+function openUser() {
+  router.push({name: 'profile.show', params: {username: props.author_username}});
+}
+
 </script>
 
 <template>
   <v-card
     class="ma-4"
-    :title="props.author_name"
-    :subtitle="`@${props.author_username} \u00B7 ${formatDistanceToNow(props.timestamp, { addSuffix: true })}`"
-    :prepend-avatar="props.author_avatar"
   >
+
+
+    <template
+      v-slot:prepend
+    >
+      <v-avatar
+        :image="props.author_avatar"
+        :size="40"
+        @click.stop="openUser"
+      >
+      </v-avatar>
+    </template>
+
+    <template
+      v-slot:title
+    >
+      <span
+        @click.stop="openUser"
+      >
+        {{ props.author_name }}
+      </span>
+    </template>
+
+    <template
+      v-slot:subtitle
+    >
+      <span
+        @click.stop="openUser"
+      >
+        {{ `@${props.author_username} \u00B7 ${formatDistanceToNow(props.timestamp, {addSuffix: true})}` }}
+      </span>
+    </template>
+
     <v-card-text>
       {{ props.content }}
     </v-card-text>

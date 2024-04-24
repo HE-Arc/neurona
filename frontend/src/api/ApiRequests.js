@@ -84,6 +84,10 @@ class ApiRequests {
     return await this.#get(routes.profile.show);
   }
 
+  async getProfileFromUsername(username){
+    return await this.#get(routes.profile.showFromUsername(username));
+  }
+
   async updateProfile(attribute, value) {
     return await this.#put(routes.profile.edit(attribute), {[attribute]: value});
   }

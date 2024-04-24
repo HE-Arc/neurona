@@ -2,6 +2,7 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from neuronaApp.models import User
 from neuronaApp.serializers import UsernameSerializer, EmailSerializer, UserSerializer, DisplayNameSerializer
 from neuronaApp.serializers.users_serializer import BiographySerializer
 from neuronaApp.token_authentication import TokenAuthentication
@@ -36,6 +37,15 @@ class Profile(viewsets.ViewSet):
     def list(self, request, *args, **kwargs):
         user = request.user
         return Response(UserSerializer(user).data)
+
+    @action(detail=False, methods=['get'], url_path='(?P<username>[^/.]+)')
+    def get_profile(self, request, username=None):
+        user = User.objects.filter(username=username)
+
+        if not user.exists():
+            return Response({"message": "User not found"}, status=404)
+
+        return Response(UserSerializer(user[0]).data)
 
     @action(detail=False, methods=['delete'])
     def delete(self, request, *args, **kwargs):

@@ -102,19 +102,50 @@ function open_post() {
   router.push({name: 'posts.show', params: {id: props.id}});
 }
 
+function open_user() {
+  router.push({name: 'profile.show', params: {username: props.author_username}});
+}
+
 </script>
 
 <template>
 
   <v-card
     v-if="mounted"
-    :title="props.author_name"
-    :subtitle="`@${props.author_username} \u00B7 ${formatDistanceToNow(props.timestamp, { addSuffix: true })}`"
-    :prepend-avatar="props.author_avatar"
     @click="open_post"
     class="ma-4"
     :ripple="false"
   >
+    <template v-slot:prepend>
+
+      <v-avatar
+        :image="props.author_avatar"
+        :size="40"
+        @click.stop="open_user"
+      >
+      </v-avatar>
+    </template>
+
+    <template
+      v-slot:title
+    >
+      <span
+        @click.stop="open_user"
+      >
+        {{ props.author_name }}
+      </span>
+    </template>
+
+    <template
+      v-slot:subtitle
+    >
+      <span
+        @click.stop="open_user"
+      >
+        {{ `@${props.author_username} \u00B7 ${formatDistanceToNow(props.timestamp, {addSuffix: true})}` }}
+      </span>
+    </template>
+
     <v-card-text class="text-body-1">
       <span>{{ props.content }}</span>
     </v-card-text>
