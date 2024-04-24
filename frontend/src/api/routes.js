@@ -27,6 +27,7 @@ const routes = {
     show: `${BASE_URL}/profile/`,
     edit: (attribute) => `${BASE_URL}/profile/${attribute}/`,
     delete: `${BASE_URL}/profile/`,
+    showFromUsername: (username) => `${BASE_URL}/profile/${username}/`,
   },
   comments: {
     delete: (id) => `${BASE_URL}/comments/${id}/`,

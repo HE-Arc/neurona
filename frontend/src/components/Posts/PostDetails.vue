@@ -23,7 +23,7 @@ const is_author = ref(false);
 const req = new ApiRequests();
 
 
-async function fetchComments(){
+async function fetchComments() {
   const response = (await req.getComments(props.id));
   response.sort((a, b) => {
     return new Date(b.created_at) - new Date(a.created_at);
@@ -53,10 +53,14 @@ function deletePost() {
   });
 }
 
-function refreshComments(){
+function refreshComments() {
   (async () => {
     await fetchComments();
   })();
+}
+
+function openProfile() {
+  console.log('open profile');
 }
 
 </script>
@@ -113,6 +117,23 @@ function refreshComments(){
       </v-dialog>
 
     </v-btn>
+
+    <v-tooltip
+      v-else-if="mounted"
+      :text="'See @' + post.user.username + ' profile'"
+      location="bottom"
+    >
+      <template
+        v-slot:activator="{ props }"
+      >
+        <v-btn
+          v-bind="props"
+          icon="mdi-account"
+          @click="console.log('click')"
+          class="ma-5"
+        />
+      </template>
+    </v-tooltip>
   </div>
 
   <Post
@@ -180,7 +201,6 @@ function refreshComments(){
   />
 
   <v-skeleton-loader v-else type="card" class="ma-4" />
-
 
   <NewComment
     v-if="mounted"

@@ -34,7 +34,6 @@ function submit() {
         :items="spaces"
         prepend-icon="mdi-account"
         label="Space"
-        v-if="false"
       >
       </v-autocomplete>
 

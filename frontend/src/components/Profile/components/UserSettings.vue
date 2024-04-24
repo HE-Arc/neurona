@@ -3,38 +3,31 @@ import MessageManager from "@/tools/MessageManager";
 import EventBus from "@/tools/EventBus";
 import store from "@/Authentication/store";
 import router from "@/router";
-import {ref} from "vue";
-import EditProperty from "@/components/Profile/EditProperty.vue";
-import ConfirmationDialog from "@/components/Profile/ConfirmationDialog.vue";
+import {onMounted, ref} from "vue";
+import EditProperty from "@/components/Profile/components/EditProperty.vue";
+import ConfirmationDialog from "@/components/Profile/components/ConfirmationDialog.vue";
+
+const props = defineProps({
+  username: String,
+  displayName: String,
+  about: String,
+});
 
 const usernameDialog = ref(false);
 const displayNameDialog = ref(false);
 const aboutDialog = ref(false);
 const deleteDialog = ref(false);
 
-function editImage() {
-  MessageManager.getInstance().add('warning', 'You cannot edit your profile image yet.');
-}
-
-function refreshUsername(username) {
-  user.value.username = username;
+function emitRefresh() {
   EventBus.emit('refresh');
-}
-
-function refreshDisplayName(display_name) {
-  EventBus.emit('refresh');
-  (async () => {
-    user.value = await req.getProfile();
-  })();
-}
-
-function refreshAbout(about) {
-  user.value.about = about;
 }
 
 function deleteAccount() {
   req.deleteAccount().then(() => {
-    MessageManager.getInstance().add('info', 'Your account has been deleted. We are sorry to see you go but we hope to see you again soon :)');
+    MessageManager.getInstance().add(
+      'info',
+      'Your account has been deleted. We are sorry to see you go but we hope to see you again soon :)'
+    );
     store.commit('logout');
     router.push({name: 'register'})
   });
@@ -98,40 +91,36 @@ function deleteAccount() {
   </v-container>
 
   <EditProperty
-    v-if="mounted"
     name="username"
     attribute_name="username"
-    :value="user.username"
+    :value="username"
     :open="usernameDialog"
     :area="false"
     @update:open="usernameDialog = $event"
-    @refresh="refreshUsername"
+    @refresh="emitRefresh"
   />
 
   <EditProperty
-    v-if="mounted"
     name="name"
     attribute_name="display_name"
-    :value="user.display_name"
+    :value="displayName"
     :open="displayNameDialog"
     :area="false"
     @update:open="displayNameDialog = $event"
-    @refresh="refreshDisplayName"
+    @refresh="emitRefresh"
   />
 
   <EditProperty
-    v-if="mounted"
     name="about"
     attribute_name="about"
-    :value="user.about"
+    :value="about"
     :open="aboutDialog"
     :area="true"
     @update:open="aboutDialog = $event"
-    @refresh="refreshAbout"
+    @refresh="emitRefresh"
   />
 
   <ConfirmationDialog
-    v-if="mounted"
     header="DANGER ZONE"
     message="Are you sure you want to delete your account? This action cannot be undone. All your data will be lost. There is no way to recover your account. Are you sure you want to proceed?"
     confirm-label="Yes, delete my account"

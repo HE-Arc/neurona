@@ -9,6 +9,7 @@ import Login from "@/components/Authentication/Login.vue";
 import Logout from "@/components/Authentication/Logout.vue";
 import Register from "@/components/Authentication/Register.vue";
 import SavedPosts from "@/components/Posts/SavedPosts.vue";
+import UserProfile from "@/components/Profile/UserProfile.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -43,6 +44,15 @@ const router = createRouter({
       component: Profile,
       meta: {
         title: "Profile",
+      },
+    },
+    {
+      path: "/profile/:username",
+      name: "profile.show",
+      component: UserProfile,
+      props: true,
+      meta: {
+        title: "User profile",
       },
     },
     {
