@@ -117,23 +117,6 @@ function openProfile() {
       </v-dialog>
 
     </v-btn>
-
-    <v-tooltip
-      v-else-if="mounted"
-      :text="'See @' + post.user.username + ' profile'"
-      location="bottom"
-    >
-      <template
-        v-slot:activator="{ props }"
-      >
-        <v-btn
-          v-bind="props"
-          icon="mdi-account"
-          @click="console.log('click')"
-          class="ma-5"
-        />
-      </template>
-    </v-tooltip>
   </div>
 
   <Post
