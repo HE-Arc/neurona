@@ -15,7 +15,7 @@ const posts = computed(() => postStore.getPostsBySpaceId(spaceId.value));
 <template>
   <Post
     v-if="posts.length" :posts="posts"
-    v-for="post in posts" :key="post.id"
+    v-for="post in posts.reverse()" :key="post.id"
     v-bind="post"
     :id="post.id"
     :title="post.title"
