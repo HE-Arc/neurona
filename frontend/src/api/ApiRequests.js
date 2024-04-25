@@ -35,7 +35,6 @@ class ApiRequests {
           break;
         case 'post':
           response = await axios.post(url, data, config);
-          console.log(url);
           break;
         case 'put':
           response = await axios.put(url, data, config);
