@@ -16,13 +16,17 @@ import Navbar from "@/components/Navbar.vue";
 import AlertBanner from "@/components/alerts/AlertBanner.vue";
 import MessageManager from "@/tools/MessageManager";
 import SnackbarMessage from "@/components/alerts/SnackbarMessage.vue";
+import { useSpaceStore } from "@/stores/SpaceStore";
+import { usePostStore } from "@/stores/PostStore";
+
 const messages = MessageManager.getInstance().get();
 const snack = MessageManager.getInstance().getSnackbar();
-import { useSpaceStore } from "@/stores/SpaceStore";
 
 onBeforeMount(() => {
   const spaceStore = useSpaceStore();
+  const postStore = usePostStore();
   spaceStore.fetchSpaces();
+  postStore.fetchPosts();
 });
 
 </script>
