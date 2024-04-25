@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import type { SpaceListItem } from '@/interfaces/SpaceListItem.interface';
 import type { SpacePostItem } from '@/interfaces/SpacePostItem.interface';
 import axios from 'axios';
+import ApiRequests from '@/api/ApiRequests';
 
 export const useSpaceStore = defineStore('space', {
   state: () => (
@@ -14,21 +15,15 @@ export const useSpaceStore = defineStore('space', {
     getSpaces: (state) => state.spaceList,
   },
   actions: {
-    fetchSpaces() {
+    async fetchSpaces() {
       this.setIsLoading(true);
-      const urlString = import.meta.env.VITE_API_URL + "/spaces";
-      console.log(urlString);
-
-      axios.get(urlString)
-        .then((response) => {
-          this.spaceList = response.data;
-        })
-        .catch((error) => {
-          console.error('An error occurred while fetching data:', error);
-        })
-        .finally(() => {
-          this.setIsLoading(false);
-        });
+      try {
+        const apiRequests = new ApiRequests();
+        const spaces = await apiRequests.getSpaces();
+        this.spaceList = spaces;
+      } catch (error) {
+        console.error('Failed to fetch posts:', error);
+      }
     },
 
     postSpace(post: SpacePostItem){
