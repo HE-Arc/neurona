@@ -20,6 +20,8 @@ store.subscribe((mutation) => {
   }
 });
 
+const authenticated = computed( () => store.state.authenticated );
+
 const spaceStore = useSpaceStore();
 const user = ref(null);
 const mounted = ref(false);
