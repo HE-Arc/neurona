@@ -35,6 +35,7 @@ class ApiRequests {
           break;
         case 'post':
           response = await axios.post(url, data, config);
+          console.log(url);
           break;
         case 'put':
           response = await axios.put(url, data, config);
@@ -117,7 +118,7 @@ class ApiRequests {
   }
 
   async createPost(content) {
-    return await this.#post(routes.posts.create, {content: content});
+    return await this.#post(routes.posts.create, content);
   }
 
   async upvote(postId) {
@@ -167,6 +168,15 @@ class ApiRequests {
   async getSavedPosts() {
     return await this.#get(routes.posts.get_saved);
   }
+
+  async getSpaces() {
+    return await this.#get(routes.spaces.show);
+  }
+
+  async getSpace(spaceId) {
+    return await this.#get(routes.spaces.get(spaceId));
+  }
+
 
 }
 
