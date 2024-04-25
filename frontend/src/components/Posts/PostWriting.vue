@@ -4,11 +4,12 @@ import router from "@/router";
 import ApiRequests from "@/api/ApiRequests";
 import MessageManager from "@/tools/MessageManager";
 import { useSpaceStore } from "@/stores/SpaceStore";
+import { usePostStore } from '@/stores/PostStore';
 
 const spaceStore = useSpaceStore();
+const postStore = usePostStore();
 const rules = ref([]);
 const content = ref('');
-// const spaces = ref([]);
 const selectedSpace = ref(null);
 const valid = ref(false);
 
@@ -27,6 +28,7 @@ function submit() {
     .then(
       () => {
         MessageManager.getInstance().snackbar('Post created successfully', 5000);
+        postStore.fetchPosts();
         router.push({name: 'home'});
       }
     );
