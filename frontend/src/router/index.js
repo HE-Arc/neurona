@@ -1,5 +1,6 @@
 import {createRouter, createWebHistory} from "vue-router";
 import HelloWorld from "@/components/HelloWorld.vue";
+import Space from '@/views/Space.vue';
 import Test from "@/views/Test.vue";
 import Timeline from "@/components/Posts/Timeline.vue";
 import PostWriting from "@/components/Posts/PostWriting.vue";
@@ -62,6 +63,15 @@ const router = createRouter({
       props: true,
       meta: {
         title: "Post details",
+      },
+    },
+    {
+      path: "/spaces/:id",
+      name: "spaces.show",
+      component: Space,
+      props: true,
+      meta: {
+        title: "Space",
       },
     },
     {

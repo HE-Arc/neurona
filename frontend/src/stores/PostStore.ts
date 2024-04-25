@@ -11,6 +11,9 @@ export const usePostStore = defineStore('post', {
   ),
   getters: {
     getPosts: (state) => state.postList,
+    getPostsBySpaceId: (state) => (spaceId: number) => {
+      return state.postList.filter(post => post.space === spaceId);
+    },
   },
   actions: {
     async fetchPosts() {
