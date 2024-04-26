@@ -1,16 +1,16 @@
 import {createRouter, createWebHistory} from "vue-router";
-import HelloWorld from "@/components/HelloWorld.vue";
-import Space from '@/views/Space.vue';
-import Test from "@/views/Test.vue";
-import Timeline from "@/components/Posts/Timeline.vue";
-import PostWriting from "@/components/Posts/PostWriting.vue";
-import Profile from "@/components/Profile/Profile.vue";
-import PostDetails from "@/components/Posts/PostDetails.vue";
-import Login from "@/components/Authentication/Login.vue";
+
 import Logout from "@/components/Authentication/Logout.vue";
-import Register from "@/components/Authentication/Register.vue";
-import SavedPosts from "@/components/Posts/SavedPosts.vue";
-import UserProfile from "@/components/Profile/UserProfile.vue";
+import HomeView from "@/views/HomeView.vue";
+import AboutView from "@/views/AboutView.vue";
+import PostCreationView from "@/views/PostCreationView.vue";
+import ProfileView from "@/views/ProfileView.vue";
+import UserProfileView from "@/views/UserProfileView.vue";
+import PostDetailsView from "@/views/PostDetailsView.vue";
+import SpaceView from "@/views/SpaceView.vue";
+import LoginView from "@/views/LoginView.vue";
+import RegisterView from "@/views/RegisterView.vue";
+import SavedPostsView from "@/views/SavedPostsView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -18,7 +18,7 @@ const router = createRouter({
     {
       path: "/",
       name: "home",
-      component: Timeline,
+      component: HomeView,
       meta: {
         title: "Home",
       },
@@ -26,7 +26,7 @@ const router = createRouter({
     {
       path: "/about",
       name: "about",
-      component: HelloWorld,
+      component: AboutView,
       meta: {
         title: "About",
       },
@@ -34,7 +34,7 @@ const router = createRouter({
     {
       path: "/posts/create",
       name: "posts.create",
-      component: PostWriting,
+      component: PostCreationView,
       meta: {
         title: "New post",
       },
@@ -42,7 +42,7 @@ const router = createRouter({
     {
       path: "/profile",
       name: "profile",
-      component: Profile,
+      component: ProfileView,
       meta: {
         title: "Profile",
       },
@@ -50,7 +50,7 @@ const router = createRouter({
     {
       path: "/profile/:username",
       name: "profile.show",
-      component: UserProfile,
+      component: UserProfileView,
       props: true,
       meta: {
         title: "User profile",
@@ -59,7 +59,7 @@ const router = createRouter({
     {
       path: "/posts/:id",
       name: "posts.show",
-      component: PostDetails,
+      component: PostDetailsView,
       props: true,
       meta: {
         title: "Post details",
@@ -68,7 +68,7 @@ const router = createRouter({
     {
       path: "/spaces/:id",
       name: "spaces.show",
-      component: Space,
+      component: SpaceView,
       props: true,
       meta: {
         title: "Space",
@@ -77,7 +77,7 @@ const router = createRouter({
     {
       path: "/login",
       name: "login",
-      component: Login,
+      component: LoginView,
       meta: {
         title: "Login",
       },
@@ -90,7 +90,7 @@ const router = createRouter({
     {
       path: "/register",
       name: "register",
-      component: Register,
+      component: RegisterView,
       meta: {
         title: "Register",
       },
@@ -98,20 +98,11 @@ const router = createRouter({
     {
       path: "/saved",
       name: "saved",
-      component: SavedPosts,
+      component: SavedPostsView,
       meta: {
         title: "Saved posts",
       },
     },
-    {
-      path: "/settings",
-      name: "settings",
-      component: HelloWorld,
-      meta: {
-        title: "Settings",
-      },
-    }
-
   ]
 });
 
