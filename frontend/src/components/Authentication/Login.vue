@@ -9,7 +9,7 @@ import { useSpaceStore } from "@/stores/SpaceStore";
 import { usePostStore } from "@/stores/PostStore";
 
 const spaceStore = useSpaceStore();
-  const postStore = usePostStore();
+const postStore = usePostStore();
 
 const username = ref('');
 
@@ -54,6 +54,7 @@ function recover(){
 
   <v-form
     class="d-flex justify-center align-center"
+    @submit.prevent="login"
   >
     <v-container fill-height>
       <v-row
@@ -80,7 +81,7 @@ function recover(){
 
             <v-text-field
               v-model="username"
-              label="Username or Email"
+              label="Username"
               required
             />
 
