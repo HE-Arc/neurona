@@ -65,6 +65,7 @@ async function register() {
 <template>
   <v-form
     class="d-flex justify-center align-center"
+    @submit.prevent="register"
   >
     <v-container fill-height>
       <v-row
@@ -105,6 +106,7 @@ async function register() {
               v-model="name"
               label="Name"
               required
+              @keyup.enter="register"
             >
               <v-tooltip
                 activator="parent"
@@ -135,7 +137,7 @@ async function register() {
                     class="mt-2 mb-2 mx-2"
                     block
                   >
-                    Sign in with passkey
+                    Register with passkey
                   </v-btn>
                 </v-col>
 
