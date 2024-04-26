@@ -1,8 +1,8 @@
 <script setup>
-import {onMounted, ref} from "vue";
+import { onMounted, ref } from "vue";
 import router from "@/router";
 import axios from "axios";
-import {formatDistanceToNow} from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import ApiRequests from "@/api/ApiRequests";
 
 const props = defineProps({
@@ -21,6 +21,7 @@ const props = defineProps({
   has_upvoted: Boolean,
   has_downvoted: Boolean,
   is_saved: Boolean,
+  images: Array,
 });
 
 const saved = ref(props.is_saved ? 0 : null);
@@ -33,7 +34,9 @@ const post = ref({
 });
 
 const mounted = ref(true);
-const vote = ref(post.value.user_upvoted ? 0 : post.value.user_downvoted ? 1 : null);
+const vote = ref(
+  post.value.user_upvoted ? 0 : post.value.user_downvoted ? 1 : null
+);
 const snackbar = ref(false);
 
 const req = new ApiRequests();
@@ -99,60 +102,28 @@ function toggle_save() {
 }
 
 function open_post() {
-  router.push({name: 'posts.show', params: {id: props.id}});
+  router.push({ name: "posts.show", params: { id: props.id } });
 }
-
-function open_user() {
-  router.push({name: 'profile.show', params: {username: props.author_username}});
-}
-
 </script>
 
 <template>
-
   <v-card
     v-if="mounted"
+    :title="props.author_name"
+    :subtitle="`@${props.author_username} · ${formatDistanceToNow(
+      props.timestamp,
+      { addSuffix: true }
+    )}`"
+    :prepend-avatar="props.author_avatar"
     @click="open_post"
     class="ma-4"
     :ripple="false"
   >
-    <template v-slot:prepend>
-
-      <v-avatar
-        :image="props.author_avatar"
-        :size="40"
-        @click.stop="open_user"
-      >
-      </v-avatar>
-    </template>
-
-    <template
-      v-slot:title
-    >
-      <span
-        @click.stop="open_user"
-      >
-        {{ props.author_name }}
-      </span>
-    </template>
-
-    <template
-      v-slot:subtitle
-    >
-      <span
-        @click.stop="open_user"
-      >
-        {{ `@${props.author_username} \u00B7 ${formatDistanceToNow(props.timestamp, {addSuffix: true})}` }}
-      </span>
-    </template>
-
     <v-card-text class="text-body-1">
       <span>{{ props.content }}</span>
     </v-card-text>
     <v-card-actions>
-      <v-btn-toggle
-        v-model="vote"
-      >
+      <v-btn-toggle v-model="vote">
         <v-btn
           prepend-icon="mdi-arrow-up-bold"
           :color="post.user_upvoted ? 'green' : ''"
@@ -166,43 +137,36 @@ function open_user() {
           :color="post.user_downvoted ? 'red' : ''"
           @click.stop="toggle_downvote"
         />
-
       </v-btn-toggle>
 
-      <v-btn-toggle
-        class="mx-2"
-      >
-        <v-btn
-          prepend-icon="mdi-comment"
-          :text="props.comments"
-        />
+      <v-btn-toggle class="mx-2">
+        <v-btn prepend-icon="mdi-comment" :text="props.comments" />
       </v-btn-toggle>
 
-      <v-spacer/>
+      <v-spacer />
 
-      <v-btn-toggle
-        v-model="saved"
-      >
+      <v-btn-toggle v-model="saved">
         <v-btn
           icon="mdi-bookmark"
           @click.stop="toggle_save"
           :color="post.saved ? 'primary' : ''"
-        >
-        </v-btn>
+        />
       </v-btn-toggle>
-
     </v-card-actions>
   </v-card>
 
+  <!-- Carousel to Display Post Images -->
+  <v-carousel v-if="props.images.length > 0" height="200px" cycle>
+    <v-carousel-item
+      v-for="image in props.images"
+      :key="image.image_url"
+      :src="image.image_url"
+    ></v-carousel-item>
+  </v-carousel>
 
-  <v-snackbar
-    v-model="snackbar"
-    timeout="2000"
-    text="Post saved"
-  />
+  <v-skeleton-loader v-else type="card" class="mx-4"></v-skeleton-loader>
 
+  <v-snackbar v-model="snackbar" timeout="2000" text="Post saved" />
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -5,9 +5,34 @@ import store from "@/Authentication/store";
 import router from "@/router";
 
 class ApiRequests {
-
   constructor() {
     this.messages = MessageManager.getInstance();
+  }
+
+  async uploadImageToImgur(imageFile) {
+    const clientId = "bffb1e3c2c0b6c2";
+
+    // Imgur API endpoint for image upload
+    const uploadEndpoint = "https://api.imgur.com/3/image";
+
+    const formData = new FormData();
+    formData.append("image", imageFile);
+
+    const config = {
+      headers: {
+        Authorization: `Client-ID ${clientId}`,
+        "Content-Type": "multipart/form-data",
+      },
+    };
+
+    try {
+      const response = await axios.post(uploadEndpoint, formData, config);
+      const imgurLink = response.data.data.link; // The direct link to the uploaded image
+      return imgurLink;
+    } catch (error) {
+      console.error("Error uploading to Imgur:", error);
+      throw error; // Rethrow the error to handle it in the component
+    }
   }
 
   #getToken() {
@@ -20,9 +45,9 @@ class ApiRequests {
     }
     return {
       headers: {
-        'Authorization': this.#getToken(),
-      }
-    }
+        Authorization: this.#getToken(),
+      },
+    };
   }
 
   async #request(url, method, data = {}, auth = true) {
@@ -30,16 +55,16 @@ class ApiRequests {
       let response;
       const config = this.#getConfig(auth);
       switch (method) {
-        case 'get':
+        case "get":
           response = await axios.get(url, config);
           break;
-        case 'post':
+        case "post":
           response = await axios.post(url, data, config);
           break;
-        case 'put':
+        case "put":
           response = await axios.put(url, data, config);
           break;
-        case 'delete':
+        case "delete":
           response = await axios.delete(url, config);
           break;
       }
@@ -47,56 +72,63 @@ class ApiRequests {
     } catch (e) {
       try {
         if (e.response.status === 403 || e.response.status === 401) {
-          this.messages.add('warning', 'Please log in to access this page.');
-          store.commit('logout');
-          await router.push({name: "login"});
-        }
-        else if (e.response.status >= 400 && e.response.status < 500) {
-          this.messages.add('warning', e.response.data.message);
+          this.messages.add("warning", "Please log in to access this page.");
+          store.commit("logout");
+          await router.push({ name: "login" });
+        } else if (e.response.status >= 400 && e.response.status < 500) {
+          this.messages.add("warning", e.response.data.message);
         } else {
-          this.messages.add('error', 'An unexpected error occurred while trying to contact the API server');
+          this.messages.add(
+            "error",
+            "An unexpected error occurred while trying to contact the API server"
+          );
         }
       } catch (e) {
-        this.messages.add('error', 'An unexpected error occurred while trying to contact the API server. It may be offline. ' +
-          'Please try again later or contact the administrator if the problem persists.');
+        this.messages.add(
+          "error",
+          "An unexpected error occurred while trying to contact the API server. It may be offline. " +
+            "Please try again later or contact the administrator if the problem persists."
+        );
       }
     }
-    throw new Error('An error occurred while trying to contact the API server');
+    throw new Error("An error occurred while trying to contact the API server");
   }
 
   async #get(url = {}, auth = true) {
-    return await this.#request(url, 'get', {}, auth);
+    return await this.#request(url, "get", {}, auth);
   }
 
   async #post(url, data = {}, auth = true) {
-    return await this.#request(url, 'post', data, auth);
+    return await this.#request(url, "post", data, auth);
   }
 
   async #put(url, data = {}, auth = true) {
-    return await this.#request(url, 'put', data, auth);
+    return await this.#request(url, "put", data, auth);
   }
 
   async #delete(url, auth = true) {
-    return await this.#request(url, 'delete', {}, auth);
+    return await this.#request(url, "delete", {}, auth);
   }
 
   async getProfile() {
     return await this.#get(routes.profile.show);
   }
 
-  async getProfileFromUsername(username){
+  async getProfileFromUsername(username) {
     return await this.#get(routes.profile.showFromUsername(username));
   }
 
   async updateProfile(attribute, value) {
-    return await this.#put(routes.profile.edit(attribute), {[attribute]: value});
+    return await this.#put(routes.profile.edit(attribute), {
+      [attribute]: value,
+    });
   }
 
-  async logout(){
+  async logout() {
     return await this.#post(routes.authentication.logout);
   }
 
-  async deleteAccount(){
+  async deleteAccount() {
     return await this.#delete(routes.profile.delete);
   }
 
@@ -137,7 +169,9 @@ class ApiRequests {
   }
 
   async createComment(postId, content) {
-    return await this.#post(routes.posts.comments(postId), {content: content});
+    return await this.#post(routes.posts.comments(postId), {
+      content: content,
+    });
   }
 
   async deleteComment(commentId) {
@@ -175,8 +209,6 @@ class ApiRequests {
   async getSpace(spaceId) {
     return await this.#get(routes.spaces.get(spaceId));
   }
-
-
 }
 
 export default ApiRequests;
