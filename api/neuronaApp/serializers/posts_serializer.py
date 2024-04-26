@@ -13,10 +13,17 @@ class PostsSerializer(serializers.ModelSerializer):
             "tag",
         ]
 
+class PostsImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostsImages
+        fields = ['image_url']
+
 class PostsComplexSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     votes_and_comments = serializers.SerializerMethodField()
     is_saved = serializers.SerializerMethodField()
+    images = PostsImageSerializer(many=True) 
+
 
     class Meta:
         model = Posts
@@ -29,6 +36,7 @@ class PostsComplexSerializer(serializers.ModelSerializer):
             "space",
             "tag",
             "is_saved",
+            "images"
         ]
 
     def get_votes_and_comments(self, obj):
