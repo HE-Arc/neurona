@@ -1,24 +1,34 @@
 <script setup>
-import {ref} from 'vue';
+import {ref, computed} from 'vue';
 import router from "@/router";
 import ApiRequests from "@/api/ApiRequests";
 import MessageManager from "@/tools/MessageManager";
+import { useSpaceStore } from "@/stores/SpaceStore";
+import { usePostStore } from '@/stores/PostStore';
 
+const spaceStore = useSpaceStore();
+const postStore = usePostStore();
 const rules = ref([]);
 const content = ref('');
-const spaces = ref([]);
+const selectedSpace = ref(null);
 const valid = ref(false);
 
 rules.value = [v => v.length <= 1000 || 'Max 1000 characters'];
 
-// TODO fetch spaces from API
-spaces.value = []
+const spaces = computed(() => spaceStore.getSpaces);
 
 function submit() {
-  new ApiRequests().createPost(content.value)
+
+  const postData = {
+    content: content.value,
+    space: selectedSpace.value
+  };
+
+  new ApiRequests().createPost(postData)
     .then(
       () => {
         MessageManager.getInstance().snackbar('Post created successfully', 5000);
+        postStore.fetchPosts();
         router.push({name: 'home'});
       }
     );
@@ -29,13 +39,14 @@ function submit() {
 <template>
   <v-container>
     <v-form v-model="valid">
-      <!-- TODO remove v-if attribute once spaces are fetched -->
       <v-autocomplete
         :items="spaces"
+        item-title="name"
+        item-value="id"
         prepend-icon="mdi-account"
         label="Space"
-      >
-      </v-autocomplete>
+        v-model="selectedSpace"
+      ></v-autocomplete>
 
       <v-textarea
         counter

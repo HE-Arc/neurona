@@ -5,6 +5,7 @@ import {useDisplay} from 'vuetify';
 import ApiRequests from "@/api/ApiRequests";
 import store from "@/Authentication/store";
 import EventBus from "@/tools/EventBus";
+import { useSpaceStore } from "@/stores/SpaceStore";
 
 store.subscribe((mutation) => {
   if(mutation.type === 'login') {
@@ -19,8 +20,9 @@ store.subscribe((mutation) => {
   }
 });
 
-const authenticated = computed(() => store.state.authenticated);
+const authenticated = computed( () => store.state.authenticated );
 
+const spaceStore = useSpaceStore();
 const user = ref(null);
 const mounted = ref(false);
 const drawer = ref(false);
@@ -37,10 +39,7 @@ const bottom_items = [
 const logout_route = {title: 'Log out', icon: 'mdi-logout', to: {name: 'logout'}};
 const login_route = {title: 'Login', icon: 'mdi-login', to: {name: 'login'}};
 
-const spaces = [
-  //{title: 'ISC1', avatar: 'mdi-account', id: 1, to: 'spaces/1'},
-  //{title: 'ISC2', avatar: 'mdi-account', id: 2, to: 'spaces/2'},
-]
+const spaces = computed(() => spaceStore.getSpaces);
 
 const is_mobile = useDisplay().smAndDown;
 
@@ -128,12 +127,12 @@ function refresh(){
       <v-list-item
           v-if="authenticated"
           v-for="(item, index) in spaces"
-          :to="item.to"
+          :to="'/spaces/' + item.id"
           :key="index"
           :value="item.id"
           :prepend-avatar="item.avatar"
           nav>
-        <v-list-item-title>{{ item.title }}</v-list-item-title>
+        <v-list-item-title>{{ item.name }}</v-list-item-title>
       </v-list-item>
 
       <v-divider v-if="authenticated"/>

@@ -23,6 +23,12 @@ const routes = {
     save: (id) => `${BASE_URL}/posts/${id}/save/`,
     get_saved: `${BASE_URL}/posts/saved/`,
   },
+  spaces: {
+    create: `${BASE_URL}/spaces/`,
+    get: (id) => `${BASE_URL}/spaces/${id}/`,
+    show: `${BASE_URL}/spaces/`,
+    delete: (id) => `${BASE_URL}/spaces/${id}/`,
+  },
   profile: {
     show: `${BASE_URL}/profile/`,
     edit: (attribute) => `${BASE_URL}/profile/${attribute}/`,

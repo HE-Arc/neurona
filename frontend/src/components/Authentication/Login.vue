@@ -5,6 +5,11 @@ import {login as passkeyLogin} from "@/Authentication/Passkey";
 import router from "@/router";
 import MessageManager from "@/tools/MessageManager";
 import store from "@/Authentication/store";
+import { useSpaceStore } from "@/stores/SpaceStore";
+import { usePostStore } from "@/stores/PostStore";
+
+const spaceStore = useSpaceStore();
+  const postStore = usePostStore();
 
 const username = ref('');
 
@@ -23,6 +28,8 @@ async function login(){
     const token = r.data.token.key;
     store.commit('setToken', token);
     store.commit('login');
+    spaceStore.fetchSpaces();
+    postStore.fetchPosts();
     router.push({name: 'home'})
   }).catch((e)=>{
     if (e.isAxiosError){
