@@ -11,6 +11,7 @@ const postStore = usePostStore();
 const spaceId = computed(() => Number(route.params.id));
 const posts = computed(() => postStore.getPostsBySpaceId(spaceId.value));
 
+// FIXME sort posts in chronological order (Explicitly)
 </script>
 <template>
   <Post

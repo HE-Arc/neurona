@@ -32,7 +32,6 @@ const items = [
 ];
 
 const bottom_items = [
-  {title: 'Settings', icon: 'mdi-cog', to: {name: 'settings'}},
   {title: 'About us', icon: 'mdi-information', to: {name: 'about'}},
 ]
 
