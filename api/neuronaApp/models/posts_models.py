@@ -10,6 +10,7 @@ class Posts(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+
     def get_vote_count(self):
         return self.votes.filter(is_upvote=True).count() - self.votes.filter(is_upvote=False).count()
 
@@ -45,7 +46,6 @@ class Posts(models.Model):
 
     def is_saved(self, user):
         return self.saved.filter(user=user).exists()
-
 
 # Image model a ne pas modifier 
 class PostsImages(models.Model):

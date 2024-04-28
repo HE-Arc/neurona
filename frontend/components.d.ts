@@ -11,7 +11,6 @@ declare module 'vue' {
     Comment: typeof import('./src/components/Posts/Comment.vue')['default']
     ConfirmationDialog: typeof import('./src/components/Profile/components/ConfirmationDialog.vue')['default']
     EditProperty: typeof import('./src/components/Profile/components/EditProperty.vue')['default']
-    Footer: typeof import('./src/components/Footer.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     Login: typeof import('./src/components/Authentication/Login.vue')['default']
     Logout: typeof import('./src/components/Authentication/Logout.vue')['default']

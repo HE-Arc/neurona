@@ -30,7 +30,7 @@ class ApiRequests {
       const imgurLink = response.data.data.link; // The direct link to the uploaded image
       return imgurLink;
     } catch (error) {
-      console.error("Error uploading to Imgur:", error);
+      console.error("Error uploading to Imgur:", error.response.data);
       throw error; // Rethrow the error to handle it in the component
     }
   }

@@ -19,6 +19,7 @@ export default class ApiRequests {
   getSavedPosts(): Promise<any>;
   getSpaces(): Promise<any>;
   getSpace(spaceId: string): Promise<any>;
+  uploadImageToImgur(imageFile: File): Promise<string>;
 
   // Ajoutez d'autres méthodes au besoin
 }
