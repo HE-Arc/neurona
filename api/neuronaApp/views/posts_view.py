@@ -154,3 +154,4 @@ class VoteView(viewsets.ViewSet):
         user = request.user
         post.unvote(user)
         return Response(status=200)
+    

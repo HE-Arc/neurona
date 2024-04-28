@@ -16,6 +16,7 @@ class ApiRequests {
     const uploadEndpoint = "https://api.imgur.com/3/image";
 
     const formData = new FormData();
+    console.error("imageFile", imageFile);
     formData.append("image", imageFile);
 
     const config = {
@@ -26,12 +27,37 @@ class ApiRequests {
     };
 
     try {
-      const response = await axios.post(uploadEndpoint, formData, config);
-      const imgurLink = response.data.data.link; // The direct link to the uploaded image
-      return imgurLink;
+      await axios.post(uploadEndpoint, formData, config).then((response) => {
+        console.log(response);
+        return response.data.data.link;
+      });
     } catch (error) {
       console.error("Error uploading to Imgur:", error.response.data);
       throw error; // Rethrow the error to handle it in the component
+    }
+  }
+
+  //temp function to test images
+  async uploadImageToLocal(imageFile) {
+    const uploadEndpoint = "/api/image/upload_image/"; // URL for the upload endpoint
+    const formData = new FormData();
+    formData.append("image", imageFile);
+
+    try {
+      const response = await axios.post(uploadEndpoint, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.data && response.data.image_url) {
+        return response.data.image_url; // Return the direct link
+      } else {
+        throw new Error("Unexpected response structure");
+      }
+    } catch (error) {
+      console.error("Error uploading to local storage:", error);
+      throw error;
     }
   }
 

@@ -39,7 +39,7 @@ async function submit() {
     uploadedFiles.value.forEach(async (file) => {
       console.log("File to upload:", file.name);
       try {
-        //const imageLink = await req.uploadImageToImgur(file); // Uploading to Imgur
+        const imageLink = await req.uploadImageToImgur(file); // Uploading to Imgur
         imageLinks.push(imageLink);
       } catch (error) {
         console.error("Failed to upload image:", error);
