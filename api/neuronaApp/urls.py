@@ -1,4 +1,5 @@
 from django.urls import path, include
+from neuronaApp.views.posts_view import ImageUploadView
 from rest_framework.routers import DefaultRouter
 
 from neuronaApp import views
@@ -10,6 +11,7 @@ router.register(r'passkey-options', views.PasskeyChallengeView, basename='passke
 router.register(r'posts', PostsViewSet)
 router.register(r'comments', CommentsViewSet, basename='comments')
 router.register(r'profile', views.Profile, basename='profile')
+router.register(r'images', ImageUploadView, basename='image-upload')
 
 urlpatterns = [
     path("register/", views.RegisterView.as_view(), name="register"),
@@ -24,4 +26,5 @@ urlpatterns = [
     path('posts/<int:pk>/upvote/', views.VoteView.as_view(actions={'post': 'upvote'}), name='upvote'),
     path('posts/<int:pk>/downvote/', views.VoteView.as_view(actions={'post': 'downvote'}), name='downvote'),
     path('posts/<int:pk>/unvote/', views.VoteView.as_view(actions={'post': 'unvote'}), name='unvote'),
+    path('images/upload/', ImageUploadView.as_view(actions={'post': 'upload_image'}), name='upload_image')
 ]

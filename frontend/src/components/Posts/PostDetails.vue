@@ -1,8 +1,7 @@
 <script setup>
-
 import Post from "@/components/Posts/Post.vue";
 import ReturnBtn from "@/components/ReturnBtn.vue";
-import {onMounted, ref} from "vue";
+import { onMounted, ref } from "vue";
 import ApiRequests from "@/api/ApiRequests";
 import MessageManager from "@/tools/MessageManager";
 import router from "@/router";
@@ -11,7 +10,7 @@ import Comment from "@/components/Posts/Comment.vue";
 
 const props = defineProps({
   id: String,
-})
+});
 
 const removeDialog = ref(false);
 const commentDialog = ref(false);
@@ -22,9 +21,8 @@ const is_author = ref(false);
 
 const req = new ApiRequests();
 
-
 async function fetchComments() {
-  const response = (await req.getComments(props.id));
+  const response = await req.getComments(props.id);
   response.sort((a, b) => {
     return new Date(b.created_at) - new Date(a.created_at);
   });
@@ -48,8 +46,8 @@ onMounted(() => {
 
 function deletePost() {
   req.deletePost(post.value.id).then(() => {
-    MessageManager.getInstance().snackbar('Post deleted successfully.', 5000);
-    router.push({name: 'home'});
+    MessageManager.getInstance().snackbar("Post deleted successfully.", 5000);
+    router.push({ name: "home" });
   });
 }
 
@@ -60,18 +58,13 @@ function refreshComments() {
 }
 
 function openProfile() {
-  console.log('open profile');
+  console.log("open profile");
 }
-
 </script>
 
 <template>
-
-
-  <div
-    class="d-flex justify-space-between align-center"
-  >
-    <ReturnBtn/>
+  <div class="d-flex justify-space-between align-center">
+    <ReturnBtn />
     <v-btn
       v-if="mounted && is_author"
       prepend-icon="mdi-delete"
@@ -80,42 +73,24 @@ function openProfile() {
     >
       Delete
 
-      <v-dialog
-        v-model="removeDialog"
-        activator="parent"
-        width="auto"
-      >
-        <v-card
-          class="pa-1"
-        >
-          <v-card-title
-          >
-            Delete post
-          </v-card-title>
+      <v-dialog v-model="removeDialog" activator="parent" width="auto">
+        <v-card class="pa-1">
+          <v-card-title> Delete post </v-card-title>
           <v-card-text>
-            Are you sure you want to delete this post? This action cannot be undone.
+            Are you sure you want to delete this post? This action cannot be
+            undone.
           </v-card-text>
-          <v-spacer/>
-          <v-card-actions
-            class="d-flex justify-end"
-          >
-            <v-btn
-              @click="removeDialog = false"
-              prepend-icon="mdi-close"
-            >
+          <v-spacer />
+          <v-card-actions class="d-flex justify-end">
+            <v-btn @click="removeDialog = false" prepend-icon="mdi-close">
               Cancel
             </v-btn>
-            <v-btn
-              color="error"
-              @click="deletePost"
-              prepend-icon="mdi-delete"
-            >
+            <v-btn color="error" @click="deletePost" prepend-icon="mdi-delete">
               Delete
             </v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
-
     </v-btn>
   </div>
 
@@ -134,20 +109,15 @@ function openProfile() {
     :has_upvoted="post.votes_and_comments.has_upvoted"
     :has_downvoted="post.votes_and_comments.has_downvoted"
     :is_saved="post.is_saved"
+    :image_urls="post.image_urls"
   />
 
   <v-skeleton-loader v-else type="card" class="ma-4" />
 
-  <v-divider/>
+  <v-divider />
 
-  <div
-    class="d-flex justify-space-between align-center"
-  >
-    <h2
-      class="text-h6 ma-4"
-    >
-      Comments
-    </h2>
+  <div class="d-flex justify-space-between align-center">
+    <h2 class="text-h6 ma-4">Comments</h2>
     <v-btn
       v-if="mounted"
       color="primary"
@@ -158,17 +128,14 @@ function openProfile() {
       New comment
     </v-btn>
   </div>
-  <p
-    class="text-body-1 ma-4"
-    v-if="comments.length === 0 && mounted"
-  >
+  <p class="text-body-1 ma-4" v-if="comments.length === 0 && mounted">
     There are no comments yet :(
   </p>
 
-
   <Comment
     v-if="mounted"
-    v-for="comment in comments" :key="comment.id"
+    v-for="comment in comments"
+    :key="comment.id"
     v-bind="comment"
     :id="comment.id"
     :content="comment.content"
@@ -193,9 +160,6 @@ function openProfile() {
     @update:open="commentDialog = $event"
     @refresh="refreshComments"
   />
-
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

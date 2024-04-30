@@ -21,7 +21,7 @@ const props = defineProps({
   has_upvoted: Boolean,
   has_downvoted: Boolean,
   is_saved: Boolean,
-  images: Array,
+  image_urls: Array,
 });
 
 const saved = ref(props.is_saved ? 0 : null);
@@ -43,6 +43,7 @@ const req = new ApiRequests();
 
 function upvote(postId) {
   req.upvote(postId);
+  console.error("Url:", props.image_urls);
 }
 
 function downvote(postId) {
@@ -131,7 +132,6 @@ function open_post() {
         >
           {{ post.vote_count }}
         </v-btn>
-
         <v-btn
           icon="mdi-arrow-down-bold"
           :color="post.user_downvoted ? 'red' : ''"
@@ -153,18 +153,21 @@ function open_post() {
         />
       </v-btn-toggle>
     </v-card-actions>
+
+    <v-carousel
+      v-if="props.image_urls && props.image_urls.length > 0"
+      height="200px"
+      cycle
+    >
+      <v-carousel-item
+        v-for="(imageUrl, index) in props.image_urls"
+        :key="index"
+        :src="`http://localhost:8000${imageUrl}`"
+      ></v-carousel-item>
+    </v-carousel>
+
+    <v-skeleton-loader v-else type="card" class="mx-4"></v-skeleton-loader>
   </v-card>
-
-  <!-- Carousel to Display Post Images -->
-  <v-carousel v-if="props.images.length > 0" height="200px" cycle>
-    <v-carousel-item
-      v-for="image in props.images"
-      :key="image.image_url"
-      :src="image.image_url"
-    ></v-carousel-item>
-  </v-carousel>
-
-  <v-skeleton-loader v-else type="card" class="mx-4"></v-skeleton-loader>
 
   <v-snackbar v-model="snackbar" timeout="2000" text="Post saved" />
 </template>

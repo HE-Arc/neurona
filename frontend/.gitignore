@@ -20,3 +20,6 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+#media files 
+/api/media/uploaded_images/*

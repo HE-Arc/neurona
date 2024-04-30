@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from neuronaApp.models import Posts, Comments, PostsImages, CommentsImages, Votes, CommentsVotes, SavedPosts
+from neuronaApp.models import Posts, Comments, CommentsImages, Votes, CommentsVotes, SavedPosts
 from neuronaApp.serializers.users_serializer import UserSerializer
 
 
@@ -11,18 +11,22 @@ class PostsSerializer(serializers.ModelSerializer):
             "content",
             "space",
             "tag",
+            "image_urls"
         ]
 
-class PostsImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PostsImages
-        fields = ['image_url']
+    def create(self, validated_data):
+        return Posts.objects.create(**validated_data)
+    
+    def update(self, instance, validated_data):
+        instance.image_urls = validated_data.get('image_urls', instance.image_urls)
+        instance.save()
+        return instance
 
 class PostsComplexSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     votes_and_comments = serializers.SerializerMethodField()
     is_saved = serializers.SerializerMethodField()
-    images = PostsImageSerializer(many=True) 
+    image_urls = serializers.ListField(child=serializers.URLField())
 
 
     class Meta:
@@ -36,8 +40,13 @@ class PostsComplexSerializer(serializers.ModelSerializer):
             "space",
             "tag",
             "is_saved",
-            "images"
+            "image_urls"
         ]
+
+    def update(self, instance, validated_data):
+        instance.image_urls = validated_data.get('image_urls', instance.image_urls)
+        instance.save()
+        return instance
 
     def get_votes_and_comments(self, obj):
         votes = obj.get_vote_count()

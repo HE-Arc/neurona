@@ -72,15 +72,6 @@ def post_deleted(sender, instance, **kwargs):
     save_post_log(instance, PostAction.DELETED)
 
 
-@receiver(pre_save, sender=PostsImages)
-def post_image_added(sender, instance, **kwargs):
-    """
-    """
-    PostImagesLogs(
-        post_id=instance.post_id,
-        image_url=instance.image_url
-    ).save()
-
 
 def save_post_vote_log(instance: Votes, action):
     PostVoteLogs(

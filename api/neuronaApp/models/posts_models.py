@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import JSONField
 
 class Posts(models.Model):
     user = models.ForeignKey('User', related_name='posts', on_delete=models.CASCADE)
@@ -9,6 +10,7 @@ class Posts(models.Model):
     is_archived = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    image_urls = JSONField(default=list)
 
 
     def get_vote_count(self):
@@ -46,14 +48,6 @@ class Posts(models.Model):
 
     def is_saved(self, user):
         return self.saved.filter(user=user).exists()
-
-# Image model a ne pas modifier 
-class PostsImages(models.Model):
-    post = models.ForeignKey(Posts, related_name='images', on_delete=models.CASCADE)
-    image_url = models.URLField(max_length=200)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
 
 class Comments(models.Model):
     user = models.ForeignKey('User', related_name='comments', on_delete=models.CASCADE)

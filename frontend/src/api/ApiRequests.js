@@ -9,6 +9,7 @@ class ApiRequests {
     this.messages = MessageManager.getInstance();
   }
 
+  //unused until fixed
   async uploadImageToImgur(imageFile) {
     const clientId = "bffb1e3c2c0b6c2";
 
@@ -37,21 +38,21 @@ class ApiRequests {
     }
   }
 
-  //temp function to test images
   async uploadImageToLocal(imageFile) {
-    const uploadEndpoint = "/api/image/upload_image/"; // URL for the upload endpoint
+    const uploadEndpoint = "http://localhost:8000/api/images/upload/";
     const formData = new FormData();
     formData.append("image", imageFile);
 
     try {
       const response = await axios.post(uploadEndpoint, formData, {
         headers: {
+          Authorization: `${this.#getToken()}`,
           "Content-Type": "multipart/form-data",
         },
       });
 
       if (response.data && response.data.image_url) {
-        return response.data.image_url; // Return the direct link
+        return response.data.image_url;
       } else {
         throw new Error("Unexpected response structure");
       }

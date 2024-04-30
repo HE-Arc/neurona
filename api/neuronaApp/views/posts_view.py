@@ -1,7 +1,10 @@
+import os
 from django.shortcuts import render, get_object_or_404
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 
 from neuronaApp.models import Posts, Comments, User, SavedPosts
 from neuronaApp.serializers import PostsSerializer, CommentsSerializer, UserSerializer, PostsComplexSerializer, \
@@ -155,3 +158,21 @@ class VoteView(viewsets.ViewSet):
         post.unvote(user)
         return Response(status=200)
     
+class ImageUploadView(viewsets.ViewSet):
+    authentication_classes = (TokenAuthentication,)
+
+    @action(detail=False, methods=["post"])
+    def upload_image(self, request):
+        if "image" not in request.FILES:
+            return Response({"error": "No image file found"}, status=400)
+
+        image = request.FILES["image"]
+        image_name = image.name
+        image_path = os.path.join("uploaded_images", image_name)
+
+        # Save the image to the storage folder
+        default_storage.save(image_path, ContentFile(image.read()))
+
+        # Return the relative path to the front-end
+        image_url = f"/media/{image_path}" 
+        return Response({"image_url": image_url})

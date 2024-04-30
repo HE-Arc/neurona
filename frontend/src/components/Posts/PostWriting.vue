@@ -27,24 +27,29 @@ function onFileChange(event) {
     uploadedFiles.value = Array.from(files);
   }
 }
-
 async function submit() {
   const req = new ApiRequests();
 
-  const imageLinks = [];
-  console.log("Uploaded files before loop:", uploadedFiles.value);
-
+  let imageLinks = [];
   if (Array.isArray(uploadedFiles.value) && uploadedFiles.value.length > 0) {
     console.log("Starting to iterate over uploaded files.");
-    uploadedFiles.value.forEach(async (file) => {
-      console.log("File to upload:", file.name);
-      try {
-        const imageLink = await req.uploadImageToImgur(file); // Uploading to Imgur
-        imageLinks.push(imageLink);
-      } catch (error) {
-        console.error("Failed to upload image:", error);
-      }
+    const uploadPromises = uploadedFiles.value.map((file) => {
+      return req
+        .uploadImageToLocal(file)
+        .then((imageLink) => {
+          console.log("Image uploaded successfully:", imageLink);
+          return imageLink;
+        })
+        .catch((error) => {
+          console.error("Failed to upload image:", error);
+          return null; // Continue with other uploads even if one fails
+        });
     });
+
+    // Wait for all uploads to complete
+    imageLinks = (await Promise.all(uploadPromises)).filter(
+      (link) => link !== null
+    );
   } else {
     console.log("No files to upload.");
   }
@@ -52,15 +57,19 @@ async function submit() {
   const postData = {
     content: content.value,
     space: selectedSpace.value,
-    images: imageLinks,
+    image_urls: imageLinks,
     saved: false,
   };
 
-  req.createPost(postData).then(() => {
+  try {
+    await req.createPost(postData);
+    console.log("Post created with images:", postData.image_urls);
     MessageManager.getInstance().snackbar("Post created successfully", 5000);
     postStore.fetchPosts();
     router.push({ name: "home" });
-  });
+  } catch (error) {
+    console.error("Error creating post:", error);
+  }
 }
 </script>
 <template>
