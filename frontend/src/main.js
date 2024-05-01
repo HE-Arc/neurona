@@ -15,8 +15,11 @@ import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import router from "@/router";
 import store from "@/Authentication/store";
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 
 const pinia = createPinia();
+pinia.use(piniaPluginPersistedstate);
+
 const app = createApp(App);
 
 registerPlugins(app);

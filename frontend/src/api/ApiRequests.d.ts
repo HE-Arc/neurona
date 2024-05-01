@@ -19,6 +19,11 @@ export default class ApiRequests {
   getSavedPosts(): Promise<any>;
   getSpaces(): Promise<any>;
   getSpace(spaceId: string): Promise<any>;
+  getSpacesJoined(): Promise<any>;
+  getPostsFromSpace(spaceId: string): Promise<any>;
+  searchSpaces(query: string): Promise<any>;
+  joinSpace(spaceId: string): Promise<void>;
+  quitSpace(spaceId: string): Promise<void>;
 
   // Ajoutez d'autres méthodes au besoin
 }

@@ -11,6 +11,7 @@ import SpaceView from "@/views/SpaceView.vue";
 import LoginView from "@/views/LoginView.vue";
 import RegisterView from "@/views/RegisterView.vue";
 import SavedPostsView from "@/views/SavedPostsView.vue";
+import SpacesListView from "@/views/SpacesListView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -63,6 +64,14 @@ const router = createRouter({
       props: true,
       meta: {
         title: "Post details",
+      },
+    },
+    {
+      path: "/spaces" ,
+      name: "spaces",
+      component: SpacesListView,
+      meta: {
+        title: "Spaces",
       },
     },
     {

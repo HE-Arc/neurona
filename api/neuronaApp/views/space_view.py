@@ -1,24 +1,34 @@
-from rest_framework.decorators import api_view
+import logging
+
+from django.db.models import Q
+from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 from rest_framework import status, viewsets
-from ..models import Spaces
-from ..serializers import SpaceSerializer
 
+from ..models import Spaces, Posts, SpacesAdmins, SpacesMembers
+from ..serializers import SpaceSerializer, PostsComplexSerializer
+from ..token_authentication import TokenAuthentication
+
+logger = logging.getLogger('django')
 
 class SpacesViewSet(viewsets.ViewSet):
     queryset = Spaces.objects.all()
+    authentication_classes = (TokenAuthentication,)
 
     def list(self, request):
         """Get all spaces."""
         spaces = Spaces.objects.all()
-        serializer = SpaceSerializer(spaces, many=True)
+        serializer = SpaceSerializer(spaces, many=True, context=request.user)
         return Response(serializer.data)
 
     def create(self, request):
         """Create a new space."""
-        serializer = SpaceSerializer(data=request.data)
+        serializer = SpaceSerializer(data=request.data, context=request.user)
+
         if serializer.is_valid():
             serializer.save()
+            SpacesAdmins(user_id=request.user.id, space_id=serializer.instance.id).save()
+            SpacesMembers(user_id=request.user.id, space_id=serializer.instance.id).save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -27,7 +37,7 @@ class SpacesViewSet(viewsets.ViewSet):
         """Get a specific space by id."""
         try:
             space = Spaces.objects.get(pk=pk)
-            serializer = SpaceSerializer(space)
+            serializer = SpaceSerializer(space, context=request.user)
             return Response(serializer.data)
 
         except Spaces.DoesNotExist:
@@ -38,10 +48,10 @@ class SpacesViewSet(viewsets.ViewSet):
         try:
             space = Spaces.objects.get(pk=pk)
             if request.method == 'PUT':
-                serializer = SpaceSerializer(space, data=request.data)
+                serializer = SpaceSerializer(space, data=request.data, context=request.user)
             else:
                 serializer = SpaceSerializer(
-                    space, data=request.data, partial=True)
+                    space, data=request.data, partial=True, context=request.user)
 
             if serializer.is_valid():
                 serializer.save()
@@ -61,3 +71,49 @@ class SpacesViewSet(viewsets.ViewSet):
 
         except Spaces.DoesNotExist:
             return Response({'error': 'Space not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+    @action(detail=False, methods=['get'])
+    def joined(self, request):
+        spaces = Spaces.objects.filter(members__user=request.user)
+        serializer = SpaceSerializer(spaces, many=True, context=request.user)
+        return Response(serializer.data, status=200)
+
+
+    @action(detail=True, methods=['get'])
+    def posts(self, request, pk=None):
+        posts = Spaces.objects.get(pk=pk).posts
+        serializer = PostsComplexSerializer(posts, context=request.user, many=True)
+        return Response(serializer.data, status=200)
+
+    @action(detail=False, methods=['get'])
+    def search(self, request):
+        query = request.GET.get('q', default="")
+        spaces = Spaces.objects.filter(Q(name__icontains=query) | Q(about__icontains=query))
+        serializer = SpaceSerializer(spaces, many=True, context=request.user)
+        return Response(serializer.data, status=200)
+
+    def _join(self, request, pk=None):
+        assert request.method == 'POST'
+        if SpacesMembers.objects.filter(user_id=request.user.id, space_id=pk).exists():
+            return Response({}, status=200)
+
+        SpacesMembers(user_id=request.user.id, space_id=pk).save()
+        return Response({}, status=201)
+
+    def _quit(self, request, pk=None):
+        assert request.method == 'DELETE'
+        if not SpacesMembers.objects.filter(user_id=request.user.id, space_id=pk).exists():
+            return Response({}, status=200)
+
+        SpacesMembers.objects.filter(user_id=request.user.id, space_id=pk).delete()
+        return Response({}, status=204)
+
+
+    @action(detail=True, methods=['post', 'delete'])
+    def join(self, request, pk=None):
+        if request.method == 'POST':
+            return self._join(request, pk)
+
+        else:
+            return self._quit(request, pk)

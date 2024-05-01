@@ -1,10 +1,19 @@
 from rest_framework import serializers
-from ..models import Spaces
+from ..models import Spaces, SpacesMembers
 from ..models import Privacy
  
 class SpaceSerializer(serializers.ModelSerializer):
-    privacy = serializers.ChoiceField(choices=[(tag.value, tag.name) for tag in Privacy])
+    joined = serializers.SerializerMethodField()
 
     class Meta:
         model = Spaces
-        fields = '__all__'
+        fields = [
+            'id',
+            'name',
+            'about',
+            'image_url',
+            'joined'
+        ]
+
+    def get_joined(self, obj):
+        return SpacesMembers.objects.filter(user_id=self.context.id, space_id=obj.id).exists()

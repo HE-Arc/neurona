@@ -172,11 +172,33 @@ class ApiRequests {
     return await this.#get(routes.spaces.show);
   }
 
+  async getSpacesJoined(){
+    return await this.#get(routes.spaces.joined);
+  }
+
   async getSpace(spaceId) {
     return await this.#get(routes.spaces.get(spaceId));
   }
 
+  async searchSpaces(query) {
+    return await this.#get(routes.spaces.search(query));
+  }
 
+  async createSpace(name, about){
+    return await this.#post(routes.spaces.create, {name: name, about: about});
+  }
+
+  async getPostsFromSpace(spaceId) {
+    return await this.#get(routes.spaces.posts(spaceId));
+  }
+
+  async joinSpace(spaceId){
+    return await this.#post(routes.spaces.join(spaceId));
+  }
+
+  async quitSpace(spaceId){
+    return await this.#delete(routes.spaces.quit(spaceId));
+  }
 }
 
 export default ApiRequests;

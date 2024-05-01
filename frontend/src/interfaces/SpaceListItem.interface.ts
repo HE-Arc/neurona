@@ -1,9 +1,7 @@
 export interface SpaceListItem {
-  id: number
+  id: string
   name: string
   about: string
   image_url: string
-  privacy: string
-  created_at: Date
-  updated_at: Date
+  joined: boolean
 }
