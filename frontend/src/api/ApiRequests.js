@@ -1,17 +1,18 @@
 import axios from "axios";
 import routes from "@/api/routes";
 import MessageManager from "@/tools/MessageManager";
-import store from "@/Authentication/store";
 import router from "@/router";
+import {useUserStore} from "@/stores/UserStore";
 
 class ApiRequests {
 
   constructor() {
     this.messages = MessageManager.getInstance();
+    this.store = useUserStore();
   }
 
   #getToken() {
-    return store.state.token;
+    return this.store.token;
   }
 
   #getConfig(auth = true) {
@@ -48,7 +49,7 @@ class ApiRequests {
       try {
         if (e.response.status === 403 || e.response.status === 401) {
           this.messages.add('warning', 'Please log in to access this page.');
-          store.commit('logout');
+          this.store.logout();
           await router.push({name: "login"});
         }
         else if (e.response.status >= 400 && e.response.status < 500) {

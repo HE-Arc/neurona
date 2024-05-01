@@ -1,17 +1,19 @@
 <script setup>
 import MessageManager from "@/tools/MessageManager";
 import EventBus from "@/tools/EventBus";
-import store from "@/Authentication/store";
 import router from "@/router";
 import {onMounted, ref} from "vue";
 import EditProperty from "@/components/Profile/components/EditProperty.vue";
 import ConfirmationDialog from "@/components/Profile/components/ConfirmationDialog.vue";
+import {useUserStore} from "@/stores/UserStore";
 
 const props = defineProps({
   username: String,
   displayName: String,
   about: String,
 });
+
+const userStore = useUserStore();
 
 const usernameDialog = ref(false);
 const displayNameDialog = ref(false);
@@ -28,7 +30,7 @@ function deleteAccount() {
       'info',
       'Your account has been deleted. We are sorry to see you go but we hope to see you again soon :)'
     );
-    store.commit('logout');
+    userStore.logout();
     router.push({name: 'register'})
   });
 }

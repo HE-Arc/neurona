@@ -3,26 +3,15 @@
 import {computed, onMounted, ref} from 'vue';
 import {useDisplay} from 'vuetify';
 import ApiRequests from "@/api/ApiRequests";
-import store from "@/Authentication/store";
 import EventBus from "@/tools/EventBus";
 import {useSpaceStore} from "@/stores/SpaceStore";
+import {useUserStore} from "@/stores/UserStore";
 
-store.subscribe((mutation) => {
-  if (mutation.type === 'login') {
-    user.value = null;
-    mounted.value = false;
-    if (store.state.authenticated) {
-      (async () => {
-        user.value = await new ApiRequests().getProfile();
-        mounted.value = true;
-      })();
-    }
-  }
-});
-
-const authenticated = computed(() => store.state.authenticated);
-
+const userStore = useUserStore();
 const spaceStore = useSpaceStore();
+
+const authenticated = computed(() => userStore.isLoggedIn);
+
 const user = ref(null);
 const mounted = ref(false);
 const drawer = ref(false);
