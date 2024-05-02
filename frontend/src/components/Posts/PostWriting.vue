@@ -15,23 +15,12 @@ const valid = ref(false);
 
 rules.value = [v => v.length <= 1000 || 'Max 1000 characters'];
 
-const spaces = computed(() => spaceStore.getSpaces);
+const spaces = computed(() => spaceStore.joinedSpaces);
 
-function submit() {
-
-  const postData = {
-    content: content.value,
-    space: selectedSpace.value
-  };
-
-  new ApiRequests().createPost(postData)
-    .then(
-      () => {
-        MessageManager.getInstance().snackbar('Post created successfully', 5000);
-        postStore.fetchPosts();
-        router.push({name: 'home'});
-      }
-    );
+async function submit(){
+  await postStore.createPost(content.value, selectedSpace.value);
+  MessageManager.getInstance().snackbar('Post created successfully', 5000);
+  await router.push({name: 'home'});
 }
 
 </script>

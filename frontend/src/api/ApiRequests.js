@@ -15,35 +15,23 @@ class ApiRequests {
     return this.store.token;
   }
 
-  #getConfig(auth = true) {
-    if (!auth) {
-      return {};
-    }
+  #getHeaders() {
     return {
-      headers: {
-        'Authorization': this.#getToken(),
-      }
+      'Authorization': this.#getToken(),
     }
   }
 
-  async #request(url, method, data = {}, auth = true) {
+  async #request(url, method, data = {}, params = {}, auth = true) {
     try {
-      let response;
-      const config = this.#getConfig(auth);
-      switch (method) {
-        case 'get':
-          response = await axios.get(url, config);
-          break;
-        case 'post':
-          response = await axios.post(url, data, config);
-          break;
-        case 'put':
-          response = await axios.put(url, data, config);
-          break;
-        case 'delete':
-          response = await axios.delete(url, config);
-          break;
-      }
+
+      const headers = (auth) ? this.#getHeaders() : {};
+      const response = await axios({
+        method: method,
+        url: url,
+        data: data,
+        params: params,
+        headers: headers,
+      });
       return response.data;
     } catch (e) {
       try {
@@ -65,20 +53,20 @@ class ApiRequests {
     throw new Error('An error occurred while trying to contact the API server');
   }
 
-  async #get(url = {}, auth = true) {
-    return await this.#request(url, 'get', {}, auth);
+  async #get(url = {}, params = {}, auth = true) {
+    return await this.#request(url, 'get', {}, params, auth);
   }
 
-  async #post(url, data = {}, auth = true) {
-    return await this.#request(url, 'post', data, auth);
+  async #post(url, data = {}, params = {}, auth = true) {
+    return await this.#request(url, 'post', data, params, auth);
   }
 
-  async #put(url, data = {}, auth = true) {
-    return await this.#request(url, 'put', data, auth);
+  async #put(url, data = {}, params = {}, auth = true) {
+    return await this.#request(url, 'put', data, params, auth);
   }
 
-  async #delete(url, auth = true) {
-    return await this.#request(url, 'delete', {}, auth);
+  async #delete(url, params = {}, auth = true) {
+    return await this.#request(url, 'delete', {}, params, auth);
   }
 
   async getProfile() {
@@ -117,8 +105,8 @@ class ApiRequests {
     return await this.#get(routes.posts.user(username));
   }
 
-  async createPost(content) {
-    return await this.#post(routes.posts.create, content);
+  async createPost(content, spaceId = null) {
+    return await this.#post(routes.posts.create, {content: content, space: spaceId});
   }
 
   async upvote(postId) {
@@ -199,6 +187,22 @@ class ApiRequests {
 
   async quitSpace(spaceId){
     return await this.#delete(routes.spaces.quit(spaceId));
+  }
+
+  async getPostsFromHome(cursor = null){
+    return await this.#get(routes.posts.show, {cursor: cursor});
+  }
+
+  async _getPostsFromSpace(spaceId, cursor = null){
+    return await this.#get(routes.spaces.posts(spaceId), {cursor: cursor});
+  }
+
+  async getPostsFromUser(username, cursor = null){
+    return await this.#get(routes.posts.user(username), {cursor: cursor});
+  }
+
+  async getPostsFromSaved(cursor = null){
+    return await this.#get(routes.posts.get_saved, {cursor: cursor});
   }
 }
 

@@ -3,22 +3,25 @@
 import {ref} from "vue";
 import ApiRequests from "@/api/ApiRequests";
 import MessageManager from "@/tools/MessageManager";
+import {usePostStore} from "@/stores/PostStore";
 
 const props = defineProps({
   open: Boolean,
   postId: String,
+  post: Object,
 })
 
 const value_ = ref("");
 const emit = defineEmits(['update:open', 'refresh']);
+const postStore = usePostStore();
 
 function submit(){
   const req = new ApiRequests();
   req.createComment(props.postId, value_.value).then(() => {
     MessageManager.getInstance().snackbar('Created successfully');
     value_.value = "";
+    postStore.increaseCommentCount(props.post);
     emit('update:open', false);
-    emit('refresh', value_.value)
   }).catch((e) => {
     // no need to show error message, it's already been done by the request class itself
     emit('update:open', false);

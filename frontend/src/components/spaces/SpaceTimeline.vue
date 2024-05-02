@@ -7,8 +7,11 @@ import MessageManager from "@/tools/MessageManager";
 import EventBus from "@/tools/EventBus";
 import router from "@/router";
 import {useSpaceStore} from "@/stores/SpaceStore";
+import {usePostStore} from "@/stores/PostStore";
 
 const spaceStore = useSpaceStore();
+const postStore = usePostStore();
+
 const quitDialog = ref(false);
 
 const space = computed(() => spaceStore.getSpace(props.spaceId));
@@ -23,15 +26,12 @@ onMounted(() => {
   spaceStore.fetchSpaceIfNecessary(props.spaceId);
 });
 
+watch(() => props.spaceId, () => {
+  if(!postStore.spacePosts[props.spaceId]){
+    postStore.fetchNextPostsSpace(props.spaceId);
+  }
+});
 
-function refreshPosts() {
-  req.getPostsFromSpace(props.spaceId).then((response) => {
-    response.sort((a, b) => {
-      return new Date(b.created_at) - new Date(a.created_at);
-    });
-    posts.value = response;
-  });
-}
 
 async function quitSpace() {
   await spaceStore.quitSpace(props.spaceId);
@@ -46,14 +46,19 @@ async function joinSpace(){
   MessageManager.getInstance().snackbar("You have joined the space");
 }
 
-onMounted(() => {
-  refreshPosts();
-});
-
-watch(() => props.spaceId, () => {
-  refreshPosts();
-});
-
+async function loadNext({ done }) {
+  try{
+    await postStore.fetchNextPostsSpace(props.spaceId);
+    if(postStore.reachedEndSpace){
+      done('empty');
+    } else {
+      done('ok');
+    }
+  } catch (e) {
+    console.error(e);
+    done('error');
+  }
+}
 
 </script>
 <template>
@@ -92,23 +97,17 @@ watch(() => props.spaceId, () => {
 
     <v-divider/>
 
-    <Post
-      v-for="post in posts" :key="post.id"
-      v-bind="post"
-      :id="post.id"
-      :title="post.title"
-      :content="post.content"
-      :timestamp="`${new Date(post.created_at)}`"
-      :author_id="post.user.id"
-      :author_username="post.user.username"
-      :author_name="post.user.display_name"
-      :author_avatar="post.user.image_url"
-      :comments="post.votes_and_comments.comments"
-      :votes="post.votes_and_comments.votes"
-      :has_upvoted="post.votes_and_comments.has_upvoted"
-      :has_downvoted="post.votes_and_comments.has_downvoted"
-      :is-saved="post.is_saved"
-    />
+    <v-infinite-scroll
+      side="end"
+      @load="loadNext"
+    >
+      <Post
+          v-for="post in postStore.spacePosts[props.spaceId]" :key="post.id"
+          v-bind="post"
+          :post="post"
+      />
+    </v-infinite-scroll>
+
 
     <v-dialog
       v-model="quitDialog"
