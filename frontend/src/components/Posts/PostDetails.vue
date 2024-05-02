@@ -56,6 +56,7 @@ async function deletePost() {
 }
 
 function refreshComments() {
+  console.log("refreshing comments");
   (async () => {
     await fetchComments();
   })();

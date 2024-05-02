@@ -189,6 +189,10 @@ class ApiRequests {
     return await this.#delete(routes.spaces.quit(spaceId));
   }
 
+  async deleteSpace(spaceId){
+    return await this.#delete(routes.spaces.delete(spaceId));
+  }
+
   async getPostsFromHome(cursor = null){
     return await this.#get(routes.posts.show, {cursor: cursor});
   }

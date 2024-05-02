@@ -4,4 +4,5 @@ export interface SpaceListItem {
   about: string
   image_url: string
   joined: boolean
+  is_admin: boolean
 }

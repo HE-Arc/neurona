@@ -133,6 +133,7 @@ export const usePostStore = defineStore('post', {
       const post = await req.createPost(content, spaceId);
 
       this.homePosts.unshift(post);
+      console.log("add post to homePosts: ", post);
 
       if(spaceId && this.spacePosts[spaceId]) {
         this.spacePosts[spaceId].unshift(post);
@@ -276,12 +277,10 @@ export const usePostStore = defineStore('post', {
         if (post.is_saved) {
           if(request){
             await (new ApiRequests()).savePost(post.id);
-            console.log('saved');
           }
         } else {
           if(request){
             await (new ApiRequests()).unsavePost(post.id);
-            console.log('unsaved');
           }
         }
     },
@@ -316,6 +315,11 @@ export const usePostStore = defineStore('post', {
     _updateCommentCount(_post: PostListItem, count: number) {
       let post: PostListItem;
 
+      if(!_post){
+        return;
+      }
+
+      post = _post;
       post.votes_and_comments.comments = count;
 
       post = this.homePosts.find(p => p.id === _post.id);
@@ -355,6 +359,16 @@ export const usePostStore = defineStore('post', {
         const req = new ApiRequests();
         return await req.getPost(postId);
       }
+    },
+
+    deleteAllPostsOfSpace(spaceId: string) {
+      this.homePosts = this.homePosts.filter(post => post.space != spaceId);
+      this.savedPosts = this.savedPosts.filter(post => post.space != spaceId);
+      this.userPosts = Object.keys(this.userPosts).reduce((acc, key) => {
+        acc[key] = this.userPosts[key].filter(post => post.space != spaceId);
+        return acc;
+      }, {} as Record<string, PostListItem[]>);
+      delete this.spacePosts[spaceId];
     }
 
   },

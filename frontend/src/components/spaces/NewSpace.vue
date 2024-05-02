@@ -3,6 +3,7 @@
 import {ref} from "vue";
 import ApiRequests from "@/api/ApiRequests";
 import EventBus from "@/tools/EventBus";
+import {useSpaceStore} from "@/stores/SpaceStore";
 
 const props = defineProps({
 });
@@ -10,19 +11,11 @@ const props = defineProps({
 const name = ref('');
 const about = ref('');
 const open = ref(false);
-const req = new ApiRequests();
+const store = useSpaceStore();
 
-function submit(){
-  console.log(name.value);
+async function submit(){
   open.value = false;
-  req.createSpace(name.value, about.value)
-    .then(() => {
-      console.log('Space created successfully');
-      EventBus.emit('refresh');
-    })
-    .catch((e) => {
-      console.error(e);
-    });
+  await store.createSpace(name.value, about.value);
 }
 
 </script>

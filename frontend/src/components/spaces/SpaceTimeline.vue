@@ -13,6 +13,7 @@ const spaceStore = useSpaceStore();
 const postStore = usePostStore();
 
 const quitDialog = ref(false);
+const deleteDialog = ref(false);
 
 const space = computed(() => spaceStore.getSpace(props.spaceId));
 const posts = ref([]);
@@ -46,6 +47,13 @@ async function joinSpace(){
   MessageManager.getInstance().snackbar("You have joined the space");
 }
 
+async function deleteSpace(){
+  await spaceStore.deleteSpace(props.spaceId);
+  deleteDialog.value = false;
+  await router.push({name: 'home'});
+  MessageManager.getInstance().snackbar("Space deleted successfully");
+}
+
 async function loadNext({ done }) {
   try{
     await postStore.fetchNextPostsSpace(props.spaceId);
@@ -77,10 +85,20 @@ async function loadNext({ done }) {
     </p>
 
     <v-btn
+        class="ma-5"
+        prepend-icon="mdi-delete"
+        color="error"
+        v-if="space?.is_admin"
+        @click="deleteDialog = true"
+    >
+      Delete
+    </v-btn>
+
+    <v-btn
       class="ma-5"
       prepend-icon="mdi-account-minus"
       color="error"
-      v-if="space?.joined"
+      v-else-if="space?.joined"
       @click="quitDialog = true"
     >
       Quit
@@ -137,6 +155,41 @@ async function loadNext({ done }) {
             color="error"
             @click="quitSpace"
             prepend-icon="mdi-account-minus"
+          >
+            Quit
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog
+        v-model="deleteDialog"
+        width="auto"
+    >
+      <v-card
+          class="pa-1"
+      >
+        <v-card-title
+        >
+          Delete space
+        </v-card-title>
+        <v-card-text>
+          Are you sure you want to delete the space?
+        </v-card-text>
+        <v-spacer/>
+        <v-card-actions
+            class="d-flex justify-end"
+        >
+          <v-btn
+              @click="deleteDialog = false"
+              prepend-icon="mdi-close"
+          >
+            Cancel
+          </v-btn>
+          <v-btn
+              color="error"
+              @click="deleteSpace"
+              prepend-icon="mdi-delete"
           >
             Quit
           </v-btn>

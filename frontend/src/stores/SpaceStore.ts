@@ -1,6 +1,7 @@
 import {defineStore} from 'pinia';
 import type {SpaceListItem} from '@/interfaces/SpaceListItem.interface';
 import ApiRequests from '@/api/ApiRequests';
+import {usePostStore} from "@/stores/PostStore";
 
 const THROTTLE_TIME_MS = 500;
 
@@ -46,7 +47,6 @@ export const useSpaceStore = defineStore('space', {
           this.spaces[space.id] = space;
         }
       }
-      console.log("size is now " + Object.keys(this.spaces).length);
     },
 
     async _search() {
@@ -65,11 +65,10 @@ export const useSpaceStore = defineStore('space', {
       }
     },
 
-    async fetchNext() {
-      try {
-        //TODO
-      } catch (error) {
-      }
+    async createSpace(name: string, about: string) {
+      const req = new ApiRequests();
+      const space = await req.createSpace(name, about);
+      this.spaces[space.id] = space;
     },
 
     async joinSpace(spaceId: string) {
@@ -82,6 +81,13 @@ export const useSpaceStore = defineStore('space', {
       const req = new ApiRequests();
       await req.quitSpace(spaceId);
       this.spaces[spaceId].joined = false;
+    },
+
+    async deleteSpace(spaceId: string) {
+      const req = new ApiRequests();
+      await req.deleteSpace(spaceId);
+      delete this.spaces[spaceId];
+      (usePostStore()).deleteAllPostsOfSpace(spaceId);
     }
   },
 })

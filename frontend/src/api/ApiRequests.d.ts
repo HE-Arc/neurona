@@ -21,8 +21,10 @@ export default class ApiRequests {
   getSpace(spaceId: string): Promise<any>;
   getSpacesJoined(): Promise<any>;
   searchSpaces(query: string): Promise<any>;
+  createSpace(name: string, about: string): Promise<any>;
   joinSpace(spaceId: string): Promise<void>;
   quitSpace(spaceId: string): Promise<void>;
+  deleteSpace(spaceId: string): Promise<void>;
   getProfile(): Promise<any>;
   updateProfile(attribute: string, value: string): Promise<void>;
   deleteAccount(): Promise<void>;

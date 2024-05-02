@@ -22,6 +22,7 @@ function submit(){
     value_.value = "";
     postStore.increaseCommentCount(props.post);
     emit('update:open', false);
+    emit('refresh');
   }).catch((e) => {
     // no need to show error message, it's already been done by the request class itself
     emit('update:open', false);
