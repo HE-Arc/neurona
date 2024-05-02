@@ -25,9 +25,14 @@ const routes = {
   },
   spaces: {
     create: `${BASE_URL}/spaces/`,
+    posts: (id) => `${BASE_URL}/spaces/${id}/posts`,
     get: (id) => `${BASE_URL}/spaces/${id}/`,
     show: `${BASE_URL}/spaces/`,
+    joined: `${BASE_URL}/spaces/joined/`,
     delete: (id) => `${BASE_URL}/spaces/${id}/`,
+    search: (query) => `${BASE_URL}/spaces/search/?q=${query}`,
+    join: (id) => `${BASE_URL}/spaces/${id}/join/`,
+    quit: (id) => `${BASE_URL}/spaces/${id}/join/`,
   },
   profile: {
     show: `${BASE_URL}/profile/`,

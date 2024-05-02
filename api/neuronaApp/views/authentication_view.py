@@ -7,6 +7,7 @@ from webauthn import options_to_json
 from webauthn.helpers.exceptions import InvalidRegistrationResponse, InvalidAuthenticationResponse
 
 from neuronaApp.models import Challenges, User, PublicKeys, ApiKeys
+from neuronaApp.serializers import UserSerializer
 from neuronaApp.serializers.authentication_serializer import ChallengeSerializer, ChallengeIdSerializer, \
     UsernameSerializer, \
     EmailSerializer, UsernameOrEmailSerializer, ApiKeySerializer, DisplayNameSerializer, UsernameLoginSerializer
@@ -155,7 +156,7 @@ class RegisterView(APIView):
         api_key = ApiKeys(user=user).generate_and_get()
         api_key_serializer = ApiKeySerializer(api_key)
 
-        return Response({"status": "ok", "token": api_key_serializer.data}, status=201)
+        return Response({"status": "ok", "token": api_key_serializer.data, "user": UserSerializer(user).data}, status=201)
 
 
 class LoginView(APIView):
@@ -207,7 +208,7 @@ class LoginView(APIView):
             api_key = ApiKeys(user=user).generate_and_get()
             api_key_serializer = ApiKeySerializer(api_key)
 
-            return Response({"status": "ok", "token": api_key_serializer.data}, status=200)
+            return Response({"status": "ok", "token": api_key_serializer.data, "user": UserSerializer(user).data}, status=200)
 
         except InvalidAuthenticationResponse as e:
             logger.error(f"authentication_verification: {e}")

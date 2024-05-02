@@ -164,3 +164,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 PASSKEY_RP_ID = env("PASSKEY_RP_ID")
 PASSKEY_ORIGIN = env("PASSKEY_ORIGIN")
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'neuronaApp.pagination.PostsCursorPagination',
+    'PAGE_SIZE': 10
+}

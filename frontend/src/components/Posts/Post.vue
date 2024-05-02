@@ -4,106 +4,40 @@ import router from "@/router";
 import axios from "axios";
 import {formatDistanceToNow} from "date-fns";
 import ApiRequests from "@/api/ApiRequests";
+import {usePostStore} from "@/stores/PostStore";
 
 const props = defineProps({
-  id: Number,
-  title: String,
-  content: String,
-  timestamp: String,
-  author_id: Number,
-  author_username: String,
-  author_name: String,
-  author_avatar: String,
-  space_id: Number,
-  space_title: String,
-  comments: Number,
-  votes: Number,
-  has_upvoted: Boolean,
-  has_downvoted: Boolean,
-  is_saved: Boolean,
+  post: Object,
 });
 
-const saved = ref(props.is_saved ? 0 : null);
+const store = usePostStore();
 
-const post = ref({
-  user_upvoted: props.has_upvoted,
-  user_downvoted: props.has_downvoted,
-  vote_count: props.votes,
-  saved: props.is_saved,
-});
+const saved = ref(props.post.is_saved ? 0 : null);
 
 const mounted = ref(true);
-const vote = ref(post.value.user_upvoted ? 0 : post.value.user_downvoted ? 1 : null);
+const vote = ref(props.post.votes_and_comments.has_upvoted ? 0 : props.post.votes_and_comments.has_downvoted ? 1 : null);
 const snackbar = ref(false);
 
 const req = new ApiRequests();
 
-function upvote(postId) {
-  req.upvote(postId);
-}
-
-function downvote(postId) {
-  req.downvote(postId);
-}
-
-function unvote(postId) {
-  req.unvote(postId);
-}
-
 function toggle_upvote() {
-  post.value.user_upvoted = !post.value.user_upvoted;
-
-  if (post.value.user_upvoted) {
-    post.value.vote_count += 1;
-    upvote(props.id);
-  } else {
-    post.value.vote_count -= 1;
-    unvote(props.id);
-  }
-
-  if (post.value.user_downvoted) {
-    post.value.vote_count += 1;
-  }
-
-  post.value.user_downvoted = false;
+  store.toggleUpvote(props.post);
 }
 
 function toggle_downvote() {
-  post.value.user_downvoted = !post.value.user_downvoted;
-
-  if (post.value.user_downvoted) {
-    post.value.vote_count -= 1;
-    downvote(props.id);
-  } else {
-    post.value.vote_count += 1;
-    unvote(props.id);
-  }
-
-  if (post.value.user_upvoted) {
-    post.value.vote_count -= 1;
-  }
-
-  post.value.user_upvoted = false;
+  store.toggleDownvote(props.post);
 }
 
 function toggle_save() {
-  post.value.saved = !post.value.saved;
-  (async () => {
-    if (post.value.saved) {
-      await req.savePost(props.id);
-      snackbar.value = true;
-    } else {
-      await req.unsavePost(props.id);
-    }
-  })();
+  store.toggleSave(props.post);
 }
 
 function open_post() {
-  router.push({name: 'posts.show', params: {id: props.id}});
+  router.push({name: 'posts.show', params: {id: props.post.id}});
 }
 
 function open_user() {
-  router.push({name: 'profile.show', params: {username: props.author_username}});
+  router.push({name: 'profile.show', params: {username: props.post.user.username}});
 }
 
 </script>
@@ -119,7 +53,7 @@ function open_user() {
     <template v-slot:prepend>
 
       <v-avatar
-        :image="props.author_avatar"
+        :image="props.post.user.image_url"
         :size="40"
         @click.stop="open_user"
       >
@@ -132,7 +66,7 @@ function open_user() {
       <span
         @click.stop="open_user"
       >
-        {{ props.author_name }}
+        {{ props.post.user.display_name }}
       </span>
     </template>
 
@@ -142,12 +76,12 @@ function open_user() {
       <span
         @click.stop="open_user"
       >
-        {{ `@${props.author_username} \u00B7 ${formatDistanceToNow(props.timestamp, {addSuffix: true})}` }}
+        {{ `@${props.post.user.username} \u00B7 ${formatDistanceToNow(props.post.created_at, {addSuffix: true})}` }}
       </span>
     </template>
 
     <v-card-text class="text-body-1">
-      <span>{{ props.content }}</span>
+      <span>{{ props.post.content }}</span>
     </v-card-text>
     <v-card-actions>
       <v-btn-toggle
@@ -155,15 +89,15 @@ function open_user() {
       >
         <v-btn
           prepend-icon="mdi-arrow-up-bold"
-          :color="post.user_upvoted ? 'green' : ''"
+          :color="props.post.votes_and_comments.has_upvoted ? 'green' : ''"
           @click.stop="toggle_upvote"
         >
-          {{ post.vote_count }}
+          {{ props.post.votes_and_comments.votes }}
         </v-btn>
 
         <v-btn
           icon="mdi-arrow-down-bold"
-          :color="post.user_downvoted ? 'red' : ''"
+          :color="props.post.votes_and_comments.has_downvoted ? 'red' : ''"
           @click.stop="toggle_downvote"
         />
 
@@ -174,7 +108,7 @@ function open_user() {
       >
         <v-btn
           prepend-icon="mdi-comment"
-          :text="props.comments"
+          :text="props.post.votes_and_comments.comments"
         />
       </v-btn-toggle>
 
@@ -186,7 +120,7 @@ function open_user() {
         <v-btn
           icon="mdi-bookmark"
           @click.stop="toggle_save"
-          :color="post.saved ? 'primary' : ''"
+          :color="props.post.is_saved ? 'primary' : ''"
         >
         </v-btn>
       </v-btn-toggle>

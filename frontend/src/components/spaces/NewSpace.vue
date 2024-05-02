@@ -2,52 +2,54 @@
 
 import {ref} from "vue";
 import ApiRequests from "@/api/ApiRequests";
-import MessageManager from "@/tools/MessageManager";
+import EventBus from "@/tools/EventBus";
+import {useSpaceStore} from "@/stores/SpaceStore";
 
 const props = defineProps({
-  name: String,
-  attribute_name: String,
-  value: String,
-  open: Boolean,
-  area: Boolean
-})
+});
 
-const value_ = ref(props.value);
-const emit = defineEmits(['update:open', 'refresh']);
+const name = ref('');
+const about = ref('');
+const open = ref(false);
+const store = useSpaceStore();
 
-function submit(){
-  emit('refresh', value_.value);
-  emit('update:open', false);
+async function submit(){
+  open.value = false;
+  await store.createSpace(name.value, about.value);
 }
 
 </script>
 
 <template>
+  <v-btn
+    color="primary"
+    class="ma-4"
+    @click="() => open = true"
+  >
+    Create a new space
+  </v-btn>
+
   <v-dialog
-    v-model="props.open"
+    v-model="open"
     width="400"
   >
     <v-form>
 
       <v-card>
         <v-card-title>
-          Edit {{ name }}
+          Create a new space
         </v-card-title>
         <v-card-text>
 
           <v-text-field
-            v-model="value_"
-            :label="name"
-            v-if="!props.area"
-          >
-          </v-text-field>
+            v-model="name"
+            label="Space name"
+          />
 
           <v-textarea
-            v-model="value_"
-            :label="name"
-            v-else
-          >
-          </v-textarea>
+            v-model="about"
+            label="About this space"
+          />
 
         </v-card-text>
         <v-card-actions
@@ -55,7 +57,7 @@ function submit(){
         >
           <v-btn
             prepend-icon="mdi-close"
-            @click="() => emit('update:open', false)"
+            @click="() => open = false"
             color="error"
           >
             Cancel
@@ -72,5 +74,7 @@ function submit(){
     </v-form>
   </v-dialog>
 </template>
+
 <style scoped>
+
 </style>

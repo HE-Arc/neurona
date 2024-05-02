@@ -4,19 +4,20 @@ import {onMounted, ref} from "vue";
 import {login as passkeyLogin} from "@/Authentication/Passkey";
 import router from "@/router";
 import MessageManager from "@/tools/MessageManager";
-import store from "@/Authentication/store";
 import { useSpaceStore } from "@/stores/SpaceStore";
 import { usePostStore } from "@/stores/PostStore";
+import {useUserStore} from "@/stores/UserStore";
 
 const spaceStore = useSpaceStore();
 const postStore = usePostStore();
+const userStore = useUserStore();
 
 const username = ref('');
 
 const messages = MessageManager.getInstance();
 
 onMounted(()=>{
-  if(store.state.authenticated){
+  if(userStore.isLoggedIn){
     router.push({name: 'home'});
   }
 });
@@ -26,8 +27,10 @@ async function login(){
   passkeyLogin(username.value).then((r)=>{
     messages.add('success', 'Logged in successfully');
     const token = r.data.token.key;
-    store.commit('setToken', token);
-    store.commit('login');
+    const user = r.data.user;
+
+    userStore.login(user, token);
+
     spaceStore.fetchSpaces();
     postStore.fetchPosts();
     router.push({name: 'home'})

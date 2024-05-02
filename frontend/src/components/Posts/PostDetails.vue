@@ -8,6 +8,8 @@ import MessageManager from "@/tools/MessageManager";
 import router from "@/router";
 import NewComment from "@/components/Posts/NewComment.vue";
 import Comment from "@/components/Posts/Comment.vue";
+import {usePostStore} from "@/stores/PostStore";
+import {useUserStore} from "@/stores/UserStore";
 
 const props = defineProps({
   id: String,
@@ -15,13 +17,14 @@ const props = defineProps({
 
 const removeDialog = ref(false);
 const commentDialog = ref(false);
-const post = ref(null);
 const comments = ref([]);
-const mounted = ref(false);
+const postMounted = ref(false);
+const commentsMounted = ref(false);
 const is_author = ref(false);
+const postStore = usePostStore();
+const post = ref(null);
 
 const req = new ApiRequests();
-
 
 async function fetchComments() {
   const response = (await req.getComments(props.id));
@@ -36,24 +39,24 @@ async function fetchComments() {
 onMounted(() => {
   (async () => {
     window.scrollTo(0, 0);
-    post.value = await req.getPost(props.id);
+    post.value = await postStore.fetchPost(props.id);
+    postMounted.value = true;
 
-    const username = (await req.getProfile()).username;
-    is_author.value = post.value.user.username === username;
+    is_author.value = post.value.user.username === useUserStore().user.username;
 
     await fetchComments();
-    mounted.value = true;
+    commentsMounted.value = true;
   })();
 });
 
-function deletePost() {
-  req.deletePost(post.value.id).then(() => {
-    MessageManager.getInstance().snackbar('Post deleted successfully.', 5000);
-    router.push({name: 'home'});
-  });
+async function deletePost() {
+  await postStore.deletePost(post.value);
+  MessageManager.getInstance().snackbar('Post deleted successfully.', 5000);
+  await router.push({name: 'home'});
 }
 
 function refreshComments() {
+  console.log("refreshing comments");
   (async () => {
     await fetchComments();
   })();
@@ -73,7 +76,7 @@ function openProfile() {
   >
     <ReturnBtn/>
     <v-btn
-      v-if="mounted && is_author"
+      v-if="is_author"
       prepend-icon="mdi-delete"
       color="error"
       class="ma-5"
@@ -120,20 +123,8 @@ function openProfile() {
   </div>
 
   <Post
-    v-if="mounted"
-    :id="post.id"
-    :title="post.title"
-    :content="post.content"
-    :timestamp="`${new Date(post.created_at)}`"
-    :author_id="post.user.id"
-    :author_username="post.user.username"
-    :author_name="post.user.display_name"
-    :author_avatar="post.user.image_url"
-    :comments="post.votes_and_comments.comments"
-    :votes="post.votes_and_comments.votes"
-    :has_upvoted="post.votes_and_comments.has_upvoted"
-    :has_downvoted="post.votes_and_comments.has_downvoted"
-    :is_saved="post.is_saved"
+    v-if="postMounted"
+    :post="post"
   />
 
   <v-skeleton-loader v-else type="card" class="ma-4" />
@@ -149,7 +140,7 @@ function openProfile() {
       Comments
     </h2>
     <v-btn
-      v-if="mounted"
+      v-if="commentsMounted"
       color="primary"
       class="ma-4"
       prepend-icon="mdi-comment"
@@ -160,14 +151,14 @@ function openProfile() {
   </div>
   <p
     class="text-body-1 ma-4"
-    v-if="comments.length === 0 && mounted"
+    v-if="comments.length === 0 && commentsMounted"
   >
     There are no comments yet :(
   </p>
 
 
   <Comment
-    v-if="mounted"
+    v-if="commentsMounted"
     v-for="comment in comments" :key="comment.id"
     v-bind="comment"
     :id="comment.id"
@@ -180,16 +171,18 @@ function openProfile() {
     :votes="comment.votes.votes"
     :has_upvoted="comment.votes.has_upvoted"
     :has_downvoted="comment.votes.has_downvoted"
+    :post="post"
     @refresh="refreshComments"
   />
 
   <v-skeleton-loader v-else type="card" class="ma-4" />
 
   <NewComment
-    v-if="mounted"
+    v-if="commentsMounted"
     title="Add a new comment"
     :post-id="post.id"
     :open="commentDialog"
+    :post="post"
     @update:open="commentDialog = $event"
     @refresh="refreshComments"
   />

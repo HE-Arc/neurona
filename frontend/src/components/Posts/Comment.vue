@@ -5,11 +5,13 @@ import {formatDistanceToNow} from "date-fns";
 import MessageManager from "@/tools/MessageManager";
 import ApiRequests from "@/api/ApiRequests";
 import router from "@/router";
+import {usePostStore} from "@/stores/PostStore";
 
 const vote = ref(null);
 const removeDialog = ref(false);
 const req = new ApiRequests();
 const is_author = ref(false);
+const postStore = usePostStore();
 
 const emit = defineEmits(['refresh']);
 
@@ -25,6 +27,7 @@ const props = defineProps({
   votes: Number,
   has_upvoted: Boolean,
   has_downvoted: Boolean,
+  post: Object,
 });
 
 onMounted(() => {
@@ -77,6 +80,7 @@ function deleteComment() {
     removeDialog.value = false;
     await req.deleteComment(props.id);
     MessageManager.getInstance().snackbar('Comment deleted successfully');
+    postStore.decreaseCommentCount(props.post);
     emit('refresh');
   })();
 }

@@ -2,42 +2,41 @@
 
 import Post from "@/components/Posts/Post.vue";
 import {onMounted, ref} from "vue";
-import ApiRequests from "@/api/ApiRequests";
+import {usePostStore} from "@/stores/PostStore";
 
-const posts = ref([]);
+const postStore = usePostStore();
 
 const props = defineProps({
   username: String,
 })
 
-onMounted(() => {
-  new ApiRequests().getUserPosts(props.username)
-    .then((response) => {
-      response.sort((a, b) => {
-        return new Date(b.created_at) - new Date(a.created_at);
-      });
-      posts.value = response;
-    });
-});
+async function loadNext({done}) {
+  try {
+    await postStore.fetchNextPostsUser(props.username);
+    if(postStore.reachedEndUser[props.username]){
+      done('empty');
+    } else {
+      done('ok');
+    }
+  } catch (e) {
+    done('error');
+    console.error(e);
+  }
+}
 </script>
 
 <template>
-  <Post
-    v-for="post in posts" :key="post.id"
-    v-bind="post"
-    :id="post.id"
-    :title="post.title"
-    :content="post.content"
-    :timestamp="`${new Date(post.created_at)}`"
-    :author_id="post.user.id"
-    :author_username="post.user.username"
-    :author_name="post.user.display_name"
-    :author_avatar="post.user.image_url"
-    :comments="post.votes_and_comments.comments"
-    :votes="post.votes_and_comments.votes"
-    :has_upvoted="post.votes_and_comments.has_upvoted"
-    :has_downvoted="post.votes_and_comments.has_downvoted"
-  />
+  <v-infinite-scroll
+    side="end"
+    @load="loadNext"
+  >
+    <Post
+      v-for="post in postStore.userPosts[props.username]" :key="post.id"
+      v-bind="post"
+      :post="post"
+    />
+  </v-infinite-scroll>
+
 </template>
 
 <style scoped>

@@ -47,11 +47,6 @@ class Posts(models.Model):
         return self.saved.filter(user=user).exists()
 
 
-class PostsImages(models.Model):
-    post = models.ForeignKey(Posts, related_name='images', on_delete=models.CASCADE)
-    image_url = models.URLField(max_length=200)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
 
 class Comments(models.Model):
@@ -118,5 +113,12 @@ class CommentsVotes(models.Model):
 class SavedPosts(models.Model):
     user = models.ForeignKey('User', related_name='saved', on_delete=models.CASCADE)
     post = models.ForeignKey('Posts', related_name='saved', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class PostsImages(models.Model):
+    post = models.ForeignKey(Posts, related_name='images', on_delete=models.CASCADE)
+    image_url = models.URLField(max_length=200)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

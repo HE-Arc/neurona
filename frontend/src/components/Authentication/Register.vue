@@ -5,15 +5,17 @@ import {register as PasskeyRegister} from "@/Authentication/Passkey";
 import routes from "@/api/routes";
 import axios from "axios";
 import router from "@/router";
-import store from "@/Authentication/store";
 import MessageManager from "@/tools/MessageManager";
+import {useUserStore} from "@/stores/UserStore";
 
 const username = ref('');
 const name = ref('');
 const messages = ref([]);
 
+const userStore = useUserStore();
+
 onMounted(() => {
-  if (sessionStorage.getItem('token')) {
+  if (userStore.isLoggedIn) {
     router.push({name: 'home'});
   }
 });
@@ -52,8 +54,12 @@ async function register() {
   }
   PasskeyRegister(username.value, name.value).then((r) => {
     MessageManager.getInstance().add('success', 'Registered successfully');
-    store.commit('setToken', r.data.token.key);
-    store.commit('login');
+
+    const token = r.data.token.key;
+    const user = r.data.user;
+
+    userStore.login(user, token);
+
     router.push({name: 'home'})
   }).catch((e) => {
     showErrorMessage(e);

@@ -1,11 +1,12 @@
 <script setup>
 import MessageManager from "@/tools/MessageManager";
-import EventBus from "@/tools/EventBus";
-import store from "@/Authentication/store";
 import router from "@/router";
-import {onMounted, ref} from "vue";
+import {ref} from "vue";
 import EditProperty from "@/components/Profile/components/EditProperty.vue";
 import ConfirmationDialog from "@/components/Profile/components/ConfirmationDialog.vue";
+import {useUserStore} from "@/stores/UserStore";
+
+const store = useUserStore();
 
 const props = defineProps({
   username: String,
@@ -18,17 +19,12 @@ const displayNameDialog = ref(false);
 const aboutDialog = ref(false);
 const deleteDialog = ref(false);
 
-function emitRefresh() {
-  EventBus.emit('refresh');
-}
-
 function deleteAccount() {
-  req.deleteAccount().then(() => {
+  store.deleteAccount().then(() => {
     MessageManager.getInstance().add(
       'info',
       'Your account has been deleted. We are sorry to see you go but we hope to see you again soon :)'
     );
-    store.commit('logout');
     router.push({name: 'register'})
   });
 }
@@ -97,7 +93,7 @@ function deleteAccount() {
     :open="usernameDialog"
     :area="false"
     @update:open="usernameDialog = $event"
-    @refresh="emitRefresh"
+    @refresh="(value) => store.updateUsername(value)"
   />
 
   <EditProperty
@@ -107,7 +103,7 @@ function deleteAccount() {
     :open="displayNameDialog"
     :area="false"
     @update:open="displayNameDialog = $event"
-    @refresh="emitRefresh"
+    @refresh="(value) => store.updateDisplayName(value)"
   />
 
   <EditProperty
@@ -117,7 +113,7 @@ function deleteAccount() {
     :open="aboutDialog"
     :area="true"
     @update:open="aboutDialog = $event"
-    @refresh="emitRefresh"
+    @refresh="(value) => store.updateAbout(value)"
   />
 
   <ConfirmationDialog
