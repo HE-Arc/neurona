@@ -16,7 +16,7 @@ export const useSpaceStore = defineStore('space', {
     }
   ),
   getters: {
-    getSpaces: (state) => Object.values(state.spaces).filter((space) => space.joined),
+    joinedSpaces: (state) => Object.values(state.spaces).filter((space) => space.joined),
     getSpace: (state) => (id: string) => state.spaces[id],
   },
   actions: {
