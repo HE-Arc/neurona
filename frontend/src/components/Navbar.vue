@@ -2,8 +2,6 @@
 
 import {computed, onMounted, reactive, ref, unref} from 'vue';
 import {useDisplay} from 'vuetify';
-import ApiRequests from "@/api/ApiRequests";
-import EventBus from "@/tools/EventBus";
 import {useSpaceStore} from "@/stores/SpaceStore";
 import {useUserStore} from "@/stores/UserStore";
 
@@ -14,8 +12,6 @@ const spaceStore = useSpaceStore();
 
 const authenticated = computed(() => userStore.isLoggedIn);
 
-const user = ref(null);
-const mounted = ref(false);
 const drawer = ref(false);
 const items = [
   {title: 'Home', icon: 'mdi-home', to: {name: 'home'}},
@@ -34,30 +30,13 @@ spaceStore.fetchSpaces();
 const spaces = computed(() => spaceStore.joinedSpaces);
 
 const is_mobile = useDisplay().smAndDown;
-
 drawer.value = !is_mobile.value;
 
-function mount() {
-  if (!authenticated.value) {
-    return;
-  }
-  spaceStore.fetchSpaces();
-  const req = new ApiRequests();
-  (async () => {
-    user.value = await req.getProfile();
-    mounted.value = true;
-  })();
-  EventBus.on('refresh', refresh);
-}
-
 onMounted(() => {
-  mount();
+  if(authenticated.value){
+    spaceStore.fetchSpaces();
+  }
 });
-
-function refresh() {
-  mounted.value = false;
-  mount();
-}
 
 </script>
 
@@ -92,7 +71,7 @@ function refresh() {
     :temporary="is_mobile"
   >
     <v-list nav>
-      <v-list-item v-if="authenticated && mounted" to="/profile" value="profile">
+      <v-list-item v-if="authenticated" to="/profile" value="profile">
         <template v-slot:prepend>
           <v-avatar :image="userStore.user?.image_url"></v-avatar>
         </template>
