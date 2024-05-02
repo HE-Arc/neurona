@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status, viewsets
 
 from ..models import Spaces, Posts, SpacesAdmins, SpacesMembers
+from ..pagination import PostsCursorPagination
 from ..serializers import SpaceSerializer, PostsComplexSerializer
 from ..token_authentication import TokenAuthentication
 
@@ -83,8 +84,15 @@ class SpacesViewSet(viewsets.ViewSet):
     @action(detail=True, methods=['get'])
     def posts(self, request, pk=None):
         posts = Spaces.objects.get(pk=pk).posts
+        paginator = PostsCursorPagination()
+        page = paginator.paginate_queryset(posts, request, view=self)
+
+        if page is not None:
+            serializer = PostsComplexSerializer(page, context=request.user, many=True)
+            return paginator.get_paginated_response(serializer.data)
+
         serializer = PostsComplexSerializer(posts, context=request.user, many=True)
-        return Response(serializer.data, status=200)
+        return Response(serializer.data)
 
     @action(detail=False, methods=['get'])
     def search(self, request):

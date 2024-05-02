@@ -8,6 +8,7 @@ from neuronaApp.serializers import PostsSerializer, CommentsSerializer, UserSeri
     CommentsComplexSerializer
 from neuronaApp.token_authentication import TokenAuthentication
 from neuronaApp.views import logger
+from neuronaApp.pagination import PostsCursorPagination
 
 
 class PostsViewSet(viewsets.ViewSet):
@@ -31,14 +32,27 @@ class PostsViewSet(viewsets.ViewSet):
 
     def list(self, request, *args, **kwargs):
         queryset = Posts.objects.all()
-        serializer = PostsComplexSerializer(queryset, context=request.user, many=True)
+        paginator = PostsCursorPagination()
+        page = paginator.paginate_queryset(queryset, request, view=self)
 
+        if page is not None:
+            serializer = PostsComplexSerializer(page, context=request.user, many=True)
+            return paginator.get_paginated_response(serializer.data)
+
+        serializer = PostsComplexSerializer(queryset, context=request.user, many=True)
         return Response(serializer.data)
 
     @action(detail=False, methods=["get"], url_path='user/(?P<username>[^/.]+)')
     def user(self, request, username=None):
         user_id = get_object_or_404(User, username__exact=username).id
         queryset = Posts.objects.filter(user_id__exact=user_id)
+        paginator = PostsCursorPagination()
+        page = paginator.paginate_queryset(queryset, request, view=self)
+
+        if page is not None:
+            serializer = PostsComplexSerializer(page, context=request.user, many=True)
+            return paginator.get_paginated_response(serializer.data)
+
         serializer = PostsComplexSerializer(queryset, context=request.user, many=True)
         return Response(serializer.data)
 
@@ -98,8 +112,15 @@ class PostsViewSet(viewsets.ViewSet):
     @action(detail=False, methods=['get'])
     def saved(self, request):
         posts = Posts.objects.filter(saved__user=request.user)
+        paginator = PostsCursorPagination()
+        page = paginator.paginate_queryset(posts, request, view=self)
+
+        if page is not None:
+            serializer = PostsComplexSerializer(page, context=request.user, many=True)
+            return paginator.get_paginated_response(serializer.data)
+
         serializer = PostsComplexSerializer(posts, context=request.user, many=True)
-        return Response(serializer.data, status=200)
+        return Response(serializer.data)
 
 class CommentsViewSet(viewsets.ViewSet):
     authentication_classes = (TokenAuthentication,)
