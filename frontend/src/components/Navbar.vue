@@ -1,6 +1,6 @@
 <script setup>
 
-import {computed, onMounted, ref} from 'vue';
+import {computed, onMounted, reactive, ref, unref} from 'vue';
 import {useDisplay} from 'vuetify';
 import ApiRequests from "@/api/ApiRequests";
 import EventBus from "@/tools/EventBus";
@@ -8,6 +8,8 @@ import {useSpaceStore} from "@/stores/SpaceStore";
 import {useUserStore} from "@/stores/UserStore";
 
 const userStore = useUserStore();
+userStore.fetch();
+
 const spaceStore = useSpaceStore();
 
 const authenticated = computed(() => userStore.isLoggedIn);
@@ -29,7 +31,7 @@ const logout_route = {title: 'Log out', icon: 'mdi-logout', to: {name: 'logout'}
 const login_route = {title: 'Login', icon: 'mdi-login', to: {name: 'login'}};
 
 spaceStore.fetchSpaces();
-const spaces = computed(() => spaceStore.getSpaces);
+const spaces = computed(() => spaceStore.joinedSpaces);
 
 const is_mobile = useDisplay().smAndDown;
 
@@ -92,10 +94,10 @@ function refresh() {
     <v-list nav>
       <v-list-item v-if="authenticated && mounted" to="/profile" value="profile">
         <template v-slot:prepend>
-          <v-avatar :image="user.image_url"></v-avatar>
+          <v-avatar :image="userStore.user?.image_url"></v-avatar>
         </template>
-        <v-list-item-title>{{ user.display_name }}</v-list-item-title>
-        <v-list-item-subtitle>@{{ user.username }}</v-list-item-subtitle>
+        <v-list-item-title>{{ userStore.user?.display_name }}</v-list-item-title>
+        <v-list-item-subtitle>@{{ userStore.user?.username }}</v-list-item-subtitle>
       </v-list-item>
 
       <v-divider v-if="authenticated"/>

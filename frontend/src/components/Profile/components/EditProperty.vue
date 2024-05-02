@@ -16,15 +16,8 @@ const value_ = ref(props.value);
 const emit = defineEmits(['update:open', 'refresh']);
 
 function submit(){
-  const req = new ApiRequests();
-  req.updateProfile(props.attribute_name, value_.value).then(() => {
-    MessageManager.getInstance().snackbar('Updated successfully');
-    emit('update:open', false);
-    emit('refresh', value_.value)
-  }).catch((e) => {
-    // no need to show error message, it's already been done by the request class itself
-    emit('update:open', false);
-  });
+  emit('refresh', value_.value);
+  emit('update:open', false);
 }
 
 </script>

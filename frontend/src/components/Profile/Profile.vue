@@ -6,6 +6,10 @@ import EventBus from "@/tools/EventBus";
 import UserTimeline from "@/components/Posts/UserTimeline.vue";
 import UserHeader from "@/components/Profile/components/UserHeader.vue";
 import UserSettings from "@/components/Profile/components/UserSettings.vue";
+import {useUserStore} from "@/stores/UserStore";
+
+const store = useUserStore();
+store.fetch();
 
 const mounted = ref(false);
 const user = ref(null);
@@ -30,10 +34,10 @@ onMounted(() => {
 
   <UserHeader
     v-if="mounted"
-    :username="user.username"
-    :display-name="user.display_name"
-    :image-url="user.image_url"
-    :about="user.about"
+    :username="store.user.username"
+    :display-name="store.user.display_name"
+    :image-url="store.user.image_url"
+    :about="store.user.about"
   />
 
   <UserSettings
@@ -51,7 +55,7 @@ onMounted(() => {
 
   <UserTimeline
     v-if="mounted"
-    :username="user.username"
+    :username="store.user.username"
   />
 
   <v-skeleton-loader
