@@ -166,7 +166,7 @@ function open_post() {
       ></v-carousel-item>
     </v-carousel>
 
-    <v-skeleton-loader v-else type="card" class="mx-4"></v-skeleton-loader>
+    <v-skeleton-loader v-else-if="image_urls.length > 0" type="card" class="mx-4"></v-skeleton-loader>
   </v-card>
 
   <v-snackbar v-model="snackbar" timeout="2000" text="Post saved" />
