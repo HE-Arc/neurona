@@ -49,8 +49,8 @@ class PostsViewSet(viewsets.ViewSet):
         serializer = PostsSerializer(data=data)
 
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=201)
+            post = serializer.save()
+            return Response(PostsComplexSerializer(post, context=request.user).data, status=201)
         return Response(serializer.errors, status=400)
 
 
