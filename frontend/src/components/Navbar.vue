@@ -20,7 +20,7 @@ const items = [
 ];
 
 const bottom_items = [
-  {title: 'About us', icon: 'mdi-information', to: {name: 'about'}},
+  //{title: 'About us', icon: 'mdi-information', to: {name: 'about'}},
 ]
 
 const logout_route = {title: 'Log out', icon: 'mdi-logout', to: {name: 'logout'}};
@@ -41,7 +41,6 @@ onMounted(() => {
 </script>
 
 <template>
-  <!-- <v-system-bar color="deep-purple darken-3"></v-system-bar> -->
 
   <v-app-bar
     color="primary"
