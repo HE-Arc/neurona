@@ -21,12 +21,12 @@ class MessageManager {
     if(message === undefined) {
       message = "An unknown error occurred";
     }
-    this.messages.value.push({
+    this.messages.value = [{
       type: severity,
       message: [message]
-    });
+    }];
     setTimeout(() => {
-      this.messages.value.shift();
+      this.messages.value = [];
     }, timeout);
   }
 
